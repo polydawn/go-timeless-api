@@ -28,6 +28,9 @@ type WareID struct {
 }
 
 func ParseWareID(x string) (WareID, error) {
+	if x == "" {
+		return WareID{}, nil
+	}
 	ss := strings.SplitN(x, ":", 2)
 	if len(ss) < 2 {
 		return WareID{}, fmt.Errorf("wareIDs must have contain a colon character (they are of form \"<type>:<hash>\")")
@@ -36,7 +39,14 @@ func ParseWareID(x string) (WareID, error) {
 }
 
 func (x WareID) String() string {
-	return x.Type + ":" + x.Hash
+	switch {
+	case x.Type == "":
+		return ""
+	case x.Hash == "":
+		return x.Type + ":-"
+	default:
+		return x.Type + ":" + x.Hash
+	}
 }
 
 var WareID_AtlasEntry = atlas.BuildEntry(WareID{}).Transform().
