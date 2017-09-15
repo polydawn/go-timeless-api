@@ -4,3 +4,9 @@
 [submodule ".gopath/src/github.com/polydawn/go-errcat"]
 	path = .gopath/src/github.com/polydawn/go-errcat
 	url = https://github.com/polydawn/go-errcat
+[submodule ".gopath/src/github.com/sergi/go-diff"]
+	path = .gopath/src/github.com/sergi/go-diff
+	url = https://github.com/sergi/go-diff
+[submodule ".gopath/src/github.com/google/go-cmp"]
+	path = .gopath/src/github.com/google/go-cmp
+	url = https://github.com/google/go-cmp
