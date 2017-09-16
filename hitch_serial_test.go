@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	stdjson "encoding/json"
 	"testing"
 
 	"github.com/pmezard/go-difflib/difflib"
@@ -27,6 +29,45 @@ func TestHitchSerializationFixtures(t *testing.T) {
 			assertNoError(t, err)
 			wantStringEqual(t, string(msg), `{"name":"cname","releases":[]}`)
 		})
+		t.Run("short catalog: one release, no replay", func(t *testing.T) {
+			msg, err := refmt.MarshalAtlased(json.EncodeOptions{},
+				Catalog{
+					"cname",
+					[]ReleaseEntry{
+						{"1.0",
+							map[ItemName]WareID{
+								"item-a": {"war", "asdf"},
+								"item-b": {"war", "qwer"},
+							},
+							map[string]string{
+								"comment": "yes",
+							},
+							nil,
+							nil,
+						},
+					},
+				},
+				HitchAtlas)
+			assertNoError(t, err)
+			wantStringEqual(t, jsonPretty(msg),
+				`{
+	"name": "cname",
+	"releases": [
+		{
+			"name": "1.0",
+			"items": {
+				"item-a": "war:asdf",
+				"item-b": "war:qwer"
+			},
+			"metadata": {
+				"comment": "yes"
+			},
+			"hazards": null,
+			"replay": null
+		}
+	]
+}`)
+		})
 	})
 }
 
@@ -50,4 +91,10 @@ func wantStringEqual(t *testing.T, a, b string) {
 	if result != "" {
 		t.Errorf("Match failed: diff:\n%s", result)
 	}
+}
+
+func jsonPretty(s []byte) string {
+	var out bytes.Buffer
+	stdjson.Indent(&out, s, "", "\t")
+	return out.String()
 }
