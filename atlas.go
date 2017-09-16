@@ -6,6 +6,7 @@ import (
 
 var rioAtlasEntries = []*atlas.AtlasEntry{
 	WareID_AtlasEntry,
+	FilesetFilters_AtlasEntry,
 }
 
 var repeatrAtlasEntries = []*atlas.AtlasEntry{

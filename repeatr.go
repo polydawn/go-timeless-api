@@ -21,7 +21,7 @@ type (
 	UnpackTree map[AbsPath]UnpackSpec
 	UnpackSpec struct {
 		WareID  WareID         `refmt:"ware"`
-		Filters FilesetFilters `refmt:"opts"`
+		Filters FilesetFilters `refmt:"opts,omitempty"`
 	}
 
 	/*
