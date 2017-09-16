@@ -16,6 +16,18 @@ func TestHitchSerializationFixtures(t *testing.T) {
 		assertNoError(t, err)
 		wantStringEqual(t, string(msg), `"a:b:c"`)
 	})
+	t.Run("Catalog serialization", func(t *testing.T) {
+		t.Run("empty catalog, no releases", func(t *testing.T) {
+			msg, err := refmt.MarshalAtlased(json.EncodeOptions{},
+				Catalog{
+					"cname",
+					[]ReleaseEntry{},
+				},
+				HitchAtlas)
+			assertNoError(t, err)
+			wantStringEqual(t, string(msg), `{"name":"cname","releases":[]}`)
+		})
+	})
 }
 
 func assertNoError(t *testing.T, err error) {
