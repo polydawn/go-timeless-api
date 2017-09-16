@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	stdjson "encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/pmezard/go-difflib/difflib"
@@ -49,24 +50,25 @@ func TestHitchSerializationFixtures(t *testing.T) {
 				},
 				HitchAtlas)
 			assertNoError(t, err)
-			wantStringEqual(t, jsonPretty(msg),
-				`{
-	"name": "cname",
-	"releases": [
-		{
-			"name": "1.0",
-			"items": {
-				"item-a": "war:asdf",
-				"item-b": "war:qwer"
-			},
-			"metadata": {
-				"comment": "yes"
-			},
-			"hazards": null,
-			"replay": null
-		}
-	]
-}`)
+			wantStringEqual(t, jsonPretty(msg), dedent(`
+				{
+					"name": "cname",
+					"releases": [
+						{
+							"name": "1.0",
+							"items": {
+								"item-a": "war:asdf",
+								"item-b": "war:qwer"
+							},
+							"metadata": {
+								"comment": "yes"
+							},
+							"hazards": null,
+							"replay": null
+						}
+					]
+				}
+			`))
 		})
 	})
 }
@@ -91,6 +93,22 @@ func wantStringEqual(t *testing.T, a, b string) {
 	if result != "" {
 		t.Errorf("Match failed: diff:\n%s", result)
 	}
+}
+
+func dedent(s string) string {
+	lines := strings.Split(s, "\n")
+	lines = lines[1 : len(lines)-1]
+	var prefixLen int
+	for i, ch := range lines[0] {
+		if ch != '\t' {
+			prefixLen = i
+			break
+		}
+	}
+	for i := range lines {
+		lines[i] = lines[i][prefixLen:]
+	}
+	return strings.Join(lines, "\n")
 }
 
 func jsonPretty(s []byte) string {
