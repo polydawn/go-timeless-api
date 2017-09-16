@@ -6,10 +6,12 @@ import (
 
 var rioAtlasEntries = []*atlas.AtlasEntry{
 	WareID_AtlasEntry,
+	FilesetFilters_AtlasEntry,
 }
 
 var repeatrAtlasEntries = []*atlas.AtlasEntry{
 	Formula_AtlasEntry,
+	UnpackSpec_AtlasEntry,
 	FormulaAction_AtlasEntry,
 	RunRecord_AtlasEntry,
 }

@@ -13,14 +13,16 @@ import (
 
 type (
 	Formula struct {
-		Inputs  FormulaInputs
+		Inputs  UnpackTree
 		Action  FormulaAction
 		Outputs FormulaOutputs
 	}
 
-	FormulaInputs map[AbsPath]WareID
-
-	FormulaOutputs map[AbsPath]string // TODO probably need more there than the ware type name ... although we could put normalizers in the "action" section
+	UnpackTree map[AbsPath]UnpackSpec
+	UnpackSpec struct {
+		WareID  WareID         `refmt:"ware"`
+		Filters FilesetFilters `refmt:"opts,omitempty"`
+	}
 
 	/*
 		Defines the action to perform to evaluate the formula -- some commands
@@ -35,11 +37,14 @@ type (
 		Exec []string
 	}
 
+	FormulaOutputs map[AbsPath]string // TODO probably need more there than the ware type name ... although we could put normalizers in the "action" section
+
 	SetupHash string // HID of formula
 )
 
 var (
 	Formula_AtlasEntry       = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
+	UnpackSpec_AtlasEntry    = atlas.BuildEntry(UnpackSpec{}).StructMap().Autogenerate().Complete()
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
 )
 

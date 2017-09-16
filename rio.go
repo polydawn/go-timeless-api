@@ -130,3 +130,5 @@ type FilesetFilters struct {
 	Mtime  string `refmt:"mtime,omitempty"`
 	Sticky bool   `refmt:"sticky,omitempty"`
 }
+
+var FilesetFilters_AtlasEntry = atlas.BuildEntry(FilesetFilters{}).StructMap().Autogenerate().Complete()
