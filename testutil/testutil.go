@@ -33,7 +33,10 @@ func WantStringEqual(t *testing.T, a, b string) {
 
 func Dedent(s string) string {
 	lines := strings.Split(s, "\n")
-	lines = lines[1 : len(lines)-1]
+	lines = lines[1:]
+	if len(strings.Fields(lines[len(lines)-1])) == 0 {
+		lines = lines[0 : len(lines)-2]
+	}
 	var prefixLen int
 	for i, ch := range lines[0] {
 		if ch != '\t' {

@@ -3,33 +3,30 @@ package api
 import (
 	"testing"
 
-	"github.com/polydawn/refmt"
-	"github.com/polydawn/refmt/json"
-
 	. "go.polydawn.net/go-timeless-api/testutil"
 )
 
 func TestHitchSerializationFixtures(t *testing.T) {
 	t.Run("ReleaseItemID serialization", func(t *testing.T) {
-		msg, err := refmt.MarshalAtlased(json.EncodeOptions{},
+		ShouldMarshalJson(t,
 			ReleaseItemID{"a", "b", "c"},
-			HitchAtlas)
-		AssertNoError(t, err)
-		WantStringEqual(t, string(msg), `"a:b:c"`)
+			HitchAtlas,
+			`"a:b:c"`,
+		)
 	})
 	t.Run("Catalog serialization", func(t *testing.T) {
 		t.Run("empty catalog, no releases", func(t *testing.T) {
-			msg, err := refmt.MarshalAtlased(json.EncodeOptions{},
+			ShouldMarshalJson(t,
 				Catalog{
 					"cname",
 					[]ReleaseEntry{},
 				},
-				HitchAtlas)
-			AssertNoError(t, err)
-			WantStringEqual(t, string(msg), `{"name":"cname","releases":[]}`)
+				HitchAtlas,
+				`{"name":"cname","releases":[]}`,
+			)
 		})
 		t.Run("short catalog: one release, no replay", func(t *testing.T) {
-			msg, err := refmt.MarshalAtlased(json.EncodeOptions{},
+			ShouldMarshalPrettyJson(t,
 				Catalog{
 					"cname",
 					[]ReleaseEntry{
@@ -46,9 +43,8 @@ func TestHitchSerializationFixtures(t *testing.T) {
 						},
 					},
 				},
-				HitchAtlas)
-			AssertNoError(t, err)
-			WantStringEqual(t, PrettifyJson(msg), Dedent(`
+				HitchAtlas,
+				`
 				{
 					"name": "cname",
 					"releases": [
@@ -65,8 +61,8 @@ func TestHitchSerializationFixtures(t *testing.T) {
 							"replay": null
 						}
 					]
-				}
-			`))
+				}`,
+			)
 		})
 	})
 }
