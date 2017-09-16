@@ -14,7 +14,7 @@ func TestHitchSerializationFixtures(t *testing.T) {
 			ReleaseItemID{"a", "b", "c"},
 			HitchAtlas)
 		assertNoError(t, err)
-		assertStringEqual(t, string(msg), `"a:b:c"`)
+		wantStringEqual(t, string(msg), `"a:b:c"`)
 	})
 }
 
@@ -25,13 +25,16 @@ func assertNoError(t *testing.T, err error) {
 	}
 }
 
-func assertStringEqual(t *testing.T, a, b string) {
-	t.Helper()
-	result, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
+func wantStringEqual(t *testing.T, a, b string) {
+	result, err := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
 		A:       difflib.SplitLines(a),
 		B:       difflib.SplitLines(b),
 		Context: 3,
 	})
+	if err != nil {
+		t.Fatalf("diffing failed: %s", err)
+	}
+	t.Helper()
 	if result != "" {
 		t.Errorf("Match failed: diff:\n%s", result)
 	}
