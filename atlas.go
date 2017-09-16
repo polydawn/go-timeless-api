@@ -16,6 +16,7 @@ var repeatrAtlasEntries = []*atlas.AtlasEntry{
 
 var hitchAtlasEntries = []*atlas.AtlasEntry{
 	Catalog_AtlasEntry,
+	ReleaseItemID_AtlasEntry,
 	ReleaseEntry_AtlasEntry,
 	Replay_AtlasEntry,
 	Step_AtlasEntry,
