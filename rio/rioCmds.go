@@ -24,6 +24,7 @@ type UnpackFunc func(
 	wareID api.WareID, // What wareID to fetch for unpacking.
 	path string, // Where to unpack the fileset (absolute path).
 	filters api.FilesetFilters, // Optionally: filters we should apply while unpacking.
+	placementMode PlacementMode, // Optionally: a placement mode specifying how the files should be put in the target path.  (Default is "copy".)
 	warehouses []api.WarehouseAddr, // Warehouses we can try to fetch from.
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
@@ -43,6 +44,30 @@ type MirrorFunc func(
 	sources []api.WarehouseAddr, // Warehouses we can try to fetch from.
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
+
+type PlacementMode string
+
+const (
+	// "none" mode instructs unpack not to place the files at all -- but it
+	// still updates the fileset cache.  So, you can use this to warm up the
+	// cache.  The target path argument to unpack will be ignored.
+	Placement_None PlacementMode = "none"
+	// "copy" mode -- the default -- instructs unpack to use the cache of
+	// already unpacked filesets (unpacking there in case of cache miss), and
+	// then place the files in their final location by a plain file copy.
+	Placement_Copy PlacementMode = "copy"
+	// "mount" mode instructs unpack to use the fileset cache (same as "copy"),
+	// then place the files in their final location by using some sort of mount.
+	// Whether "mount" means "bind", "aufs", "overlayfs", etc is left to
+	// interpretation, but regardless it A) should be faster than "copy" and
+	// B) since it's a mount, may be slightly harder to rmdir :)
+	Placement_Mount PlacementMode = "mount"
+	// "direct" mode instructs unpack to skip the cache and work directly in
+	// the target path.  (It will still fall back to copy mode if the requested
+	// ware is already in the fileset cache, "direct" is the one mode that
+	// will not *populate* the fileset cache if empty.)
+	Placement_Direct PlacementMode = "direct"
+)
 
 /*
 	Monitoring configuration structs, and message types used.
