@@ -12,6 +12,7 @@ var rioAtlasEntries = []*atlas.AtlasEntry{
 var repeatrAtlasEntries = []*atlas.AtlasEntry{
 	Formula_AtlasEntry,
 	FormulaAction_AtlasEntry,
+	OutputSpec_AtlasEntry,
 	RunRecord_AtlasEntry,
 }
 

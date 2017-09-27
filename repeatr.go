@@ -13,12 +13,10 @@ import (
 
 type (
 	Formula struct {
-		Inputs  FormulaInputs
+		Inputs  map[AbsPath]WareID
 		Action  FormulaAction
-		Outputs FormulaOutputs
+		Outputs map[AbsPath]OutputSpec
 	}
-
-	FormulaInputs map[AbsPath]WareID
 
 	/*
 		Defines the action to perform to evaluate the formula -- some commands
@@ -33,7 +31,10 @@ type (
 		Exec []string
 	}
 
-	FormulaOutputs map[AbsPath]string // TODO probably need more there than the ware type name ... although we could put normalizers in the "action" section
+	OutputSpec struct {
+		PackFmt string         `refmt:"packfmt"`
+		Filters FilesetFilters `refmt:",omitempty"`
+	}
 
 	SetupHash string // HID of formula
 )
@@ -41,6 +42,7 @@ type (
 var (
 	Formula_AtlasEntry       = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
+	OutputSpec_AtlasEntry    = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
 
 type RunRecord struct {
