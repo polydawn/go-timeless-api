@@ -13,9 +13,11 @@ import (
 
 type (
 	Formula struct {
-		Inputs  map[AbsPath]WareID
-		Action  FormulaAction
-		Outputs map[AbsPath]OutputSpec
+		Inputs    map[AbsPath]WareID
+		Action    FormulaAction
+		Outputs   map[AbsPath]OutputSpec
+		FetchUrls map[AbsPath][]WarehouseAddr
+		SaveUrls  map[AbsPath][]WarehouseAddr
 	}
 
 	/*
@@ -40,7 +42,12 @@ type (
 )
 
 var (
-	Formula_AtlasEntry       = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
+	Formula_AtlasEntry    = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
+	FormulaCas_AtlasEntry = atlas.BuildEntry(Formula{}).StructMap().
+				AddField("Inputs", atlas.StructMapEntry{SerialName: "inputs"}).
+				AddField("Action", atlas.StructMapEntry{SerialName: "action"}).
+				AddField("Outputs", atlas.StructMapEntry{SerialName: "outputs"}).
+				Complete() // Note the explicit lack of fetchUrls and saveUrls.
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
 	OutputSpec_AtlasEntry    = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )

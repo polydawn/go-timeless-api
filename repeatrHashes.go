@@ -24,7 +24,7 @@ func (frm Formula) SetupHash() SetupHash {
 	msg, err := refmt.MarshalAtlased(
 		cbor.EncodeOptions{},
 		frm,
-		RepeatrAtlas,
+		FormulaCasAtlas,
 	)
 	if err != nil {
 		panic(err)

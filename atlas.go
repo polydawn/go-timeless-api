@@ -16,6 +16,12 @@ var repeatrAtlasEntries = []*atlas.AtlasEntry{
 	RunRecord_AtlasEntry,
 }
 
+var formulaCasAtlasEntries = []*atlas.AtlasEntry{
+	FormulaCas_AtlasEntry,
+	FormulaAction_AtlasEntry,
+	OutputSpec_AtlasEntry,
+}
+
 var hitchAtlasEntries = []*atlas.AtlasEntry{
 	Catalog_AtlasEntry,
 	ReleaseItemID_AtlasEntry,
@@ -28,6 +34,13 @@ var RepeatrAtlas = atlas.MustBuild(
 	aecat(
 		rioAtlasEntries,
 		repeatrAtlasEntries,
+	)...,
+)
+
+var FormulaCasAtlas = atlas.MustBuild(
+	aecat(
+		rioAtlasEntries,
+		formulaCasAtlasEntries,
 	)...,
 )
 

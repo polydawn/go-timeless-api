@@ -19,6 +19,17 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 				Outputs: map[AbsPath]OutputSpec{
 					"/saveme": {PackFmt: "tar"},
 				},
+				FetchUrls: map[AbsPath][]WarehouseAddr{
+					"/": []WarehouseAddr{
+						"https+ca://ports.polydawn.io/assets/",
+						"https+ca://mirror.wahoo.io/timeless/assets/",
+					},
+				},
+				SaveUrls: map[AbsPath][]WarehouseAddr{
+					"/saveme": []WarehouseAddr{
+						"file+ca://./wares/",
+					},
+				},
 			},
 			RepeatrAtlas,
 			`
@@ -42,6 +53,17 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 							"sticky": false
 						}
 					}
+				},
+				"fetchUrls": {
+					"/": [
+						"https+ca://ports.polydawn.io/assets/",
+						"https+ca://mirror.wahoo.io/timeless/assets/"
+					]
+				},
+				"saveUrls": {
+					"/saveme": [
+						"file+ca://./wares/"
+					]
 				}
 			}`,
 		)
