@@ -86,4 +86,49 @@ func TestFormulaHashing(t *testing.T) {
 			t.Errorf("clone method must yield an equivalent object")
 		}
 	})
+	t.Run("Formula.SetupHash should vary only on the relevant fields", func(t *testing.T) {
+		baseHash := baseFormula.SetupHash()
+		t.Run("inputs affect setupHash", func(t *testing.T) {
+			altFormula := baseFormula.Clone()
+			altFormula.Inputs["/addntl"] = WareID{"demo", "qwer"}
+			if baseHash == altFormula.SetupHash() {
+				t.Errorf("hash should have changed")
+			}
+		})
+		t.Run("action affects setupHash", func(t *testing.T) {
+			altFormula := baseFormula.Clone()
+			altFormula.Action.Exec = []string{"/wow"}
+			if baseHash == altFormula.SetupHash() {
+				t.Errorf("hash should have changed")
+			}
+		})
+		t.Run("outputs affect setupHash", func(t *testing.T) {
+			altFormula := baseFormula.Clone()
+			altFormula.Outputs["/addntl"] = OutputSpec{PackFmt: "somefmt"}
+			if baseHash == altFormula.SetupHash() {
+				t.Errorf("hash should have changed")
+			}
+			t.Run("output filters affect setupHash", func(t *testing.T) {
+				altFormula := baseFormula.Clone()
+				altFormula.Outputs["/saveme"] = OutputSpec{baseFormula.Outputs["/saveme"].PackFmt, FilesetFilters{Uid: "4000"}}
+				if baseHash == altFormula.SetupHash() {
+					t.Errorf("hash should have changed")
+				}
+			})
+		})
+		t.Run("fetchUrls do not affect setupHash", func(t *testing.T) {
+			altFormula := baseFormula.Clone()
+			altFormula.FetchUrls["/addntl"] = []WarehouseAddr{}
+			if baseHash != altFormula.SetupHash() {
+				t.Errorf("hash should not have changed")
+			}
+		})
+		t.Run("saveUrls do not affect setupHash", func(t *testing.T) {
+			altFormula := baseFormula.Clone()
+			altFormula.SaveUrls["/addntl"] = []WarehouseAddr{}
+			if baseHash != altFormula.SetupHash() {
+				t.Errorf("hash should not have changed")
+			}
+		})
+	})
 }
