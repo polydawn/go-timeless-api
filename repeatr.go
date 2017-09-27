@@ -8,6 +8,7 @@ package api
 */
 
 import (
+	"github.com/polydawn/refmt"
 	"github.com/polydawn/refmt/obj/atlas"
 )
 
@@ -51,6 +52,11 @@ var (
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
 	OutputSpec_AtlasEntry    = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
+
+func (f *Formula) Clone() (f2 Formula) {
+	refmt.MustCloneAtlased(f, &f2, RepeatrAtlas)
+	return
+}
 
 type RunRecord struct {
 	UID       string             // random number, presumed globally unique.

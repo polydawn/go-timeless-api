@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 
 	"github.com/polydawn/refmt"
@@ -78,5 +79,11 @@ func TestFormulaHashing(t *testing.T) {
 				t.Errorf("should not find saveUrls")
 			}
 		})
+	})
+	t.Run("Formula.Clone should DTRT", func(t *testing.T) {
+		altFormula := baseFormula.Clone()
+		if !reflect.DeepEqual(altFormula, baseFormula) {
+			t.Errorf("clone method must yield an equivalent object")
+		}
 	})
 }
