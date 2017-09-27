@@ -132,3 +132,9 @@ type FilesetFilters struct {
 }
 
 var FilesetFilters_AtlasEntry = atlas.BuildEntry(FilesetFilters{}).StructMap().Autogenerate().Complete()
+
+var (
+	Filter_NoMutation     = FilesetFilters{"keep", "keep", "keep", true}                 // The default filters on repeatr inputs.
+	Filter_DefaultFlatten = FilesetFilters{"1000", "1000", "2010-01-01T00:00:00Z", true} // The default filters on repeatr outputs and rio pack.
+	Filter_LowPriv        = FilesetFilters{"mine", "mine", "keep", false}                // The default filters on rio unpack.
+)
