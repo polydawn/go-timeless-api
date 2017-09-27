@@ -8,20 +8,17 @@ package api
 */
 
 import (
+	"github.com/polydawn/refmt"
 	"github.com/polydawn/refmt/obj/atlas"
 )
 
 type (
 	Formula struct {
-		Inputs  UnpackTree
-		Action  FormulaAction
-		Outputs FormulaOutputs
-	}
-
-	UnpackTree map[AbsPath]UnpackSpec
-	UnpackSpec struct {
-		WareID  WareID         `refmt:"ware"`
-		Filters FilesetFilters `refmt:"opts,omitempty"`
+		Inputs    map[AbsPath]WareID
+		Action    FormulaAction
+		Outputs   map[AbsPath]OutputSpec
+		FetchUrls map[AbsPath][]WarehouseAddr
+		SaveUrls  map[AbsPath][]WarehouseAddr
 	}
 
 	/*
@@ -37,16 +34,29 @@ type (
 		Exec []string
 	}
 
-	FormulaOutputs map[AbsPath]string // TODO probably need more there than the ware type name ... although we could put normalizers in the "action" section
+	OutputSpec struct {
+		PackFmt string         `refmt:"packfmt"`
+		Filters FilesetFilters `refmt:",omitempty"`
+	}
 
 	SetupHash string // HID of formula
 )
 
 var (
-	Formula_AtlasEntry       = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
-	UnpackSpec_AtlasEntry    = atlas.BuildEntry(UnpackSpec{}).StructMap().Autogenerate().Complete()
+	Formula_AtlasEntry    = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
+	FormulaCas_AtlasEntry = atlas.BuildEntry(Formula{}).StructMap().
+				AddField("Inputs", atlas.StructMapEntry{SerialName: "inputs"}).
+				AddField("Action", atlas.StructMapEntry{SerialName: "action"}).
+				AddField("Outputs", atlas.StructMapEntry{SerialName: "outputs"}).
+				Complete() // Note the explicit lack of fetchUrls and saveUrls.
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
+	OutputSpec_AtlasEntry    = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
+
+func (f *Formula) Clone() (f2 Formula) {
+	refmt.MustCloneAtlased(f, &f2, RepeatrAtlas)
+	return
+}
 
 type RunRecord struct {
 	UID       string             // random number, presumed globally unique.

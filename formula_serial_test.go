@@ -10,26 +10,32 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 	t.Run("basic formula", func(t *testing.T) {
 		ShouldMarshalPrettyJson(t,
 			Formula{
-				Inputs: UnpackTree{
-					"/": UnpackSpec{WareID: WareID{"demo", "asdf"}},
+				Inputs: map[AbsPath]WareID{
+					"/": WareID{"demo", "asdf"},
 				},
 				Action: FormulaAction{
 					Exec: []string{"/bin/hello", "world"},
+				},
+				Outputs: map[AbsPath]OutputSpec{
+					"/saveme": {PackFmt: "tar"},
+				},
+				FetchUrls: map[AbsPath][]WarehouseAddr{
+					"/": []WarehouseAddr{
+						"https+ca://ports.polydawn.io/assets/",
+						"https+ca://mirror.wahoo.io/timeless/assets/",
+					},
+				},
+				SaveUrls: map[AbsPath][]WarehouseAddr{
+					"/saveme": []WarehouseAddr{
+						"file+ca://./wares/",
+					},
 				},
 			},
 			RepeatrAtlas,
 			`
 			{
 				"inputs": {
-					"/": {
-						"ware": "demo:asdf",
-						"opts": {
-							"uid": "",
-							"gid": "",
-							"mtime": "",
-							"sticky": false
-						}
-					}
+					"/": "demo:asdf"
 				},
 				"action": {
 					"exec": [
@@ -37,7 +43,28 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 						"world"
 					]
 				},
-				"outputs": null
+				"outputs": {
+					"/saveme": {
+						"packfmt": "tar",
+						"filters": {
+							"uid": "",
+							"gid": "",
+							"mtime": "",
+							"sticky": false
+						}
+					}
+				},
+				"fetchUrls": {
+					"/": [
+						"https+ca://ports.polydawn.io/assets/",
+						"https+ca://mirror.wahoo.io/timeless/assets/"
+					]
+				},
+				"saveUrls": {
+					"/saveme": [
+						"file+ca://./wares/"
+					]
+				}
 			}`,
 		)
 	})
