@@ -13,16 +13,12 @@ import (
 
 type (
 	Formula struct {
-		Inputs  UnpackTree
+		Inputs  FormulaInputs
 		Action  FormulaAction
 		Outputs FormulaOutputs
 	}
 
-	UnpackTree map[AbsPath]UnpackSpec
-	UnpackSpec struct {
-		WareID  WareID         `refmt:"ware"`
-		Filters FilesetFilters `refmt:"opts,omitempty"`
-	}
+	FormulaInputs map[AbsPath]WareID
 
 	/*
 		Defines the action to perform to evaluate the formula -- some commands
@@ -44,7 +40,6 @@ type (
 
 var (
 	Formula_AtlasEntry       = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
-	UnpackSpec_AtlasEntry    = atlas.BuildEntry(UnpackSpec{}).StructMap().Autogenerate().Complete()
 	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
 )
 

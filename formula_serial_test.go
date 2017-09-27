@@ -10,8 +10,8 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 	t.Run("basic formula", func(t *testing.T) {
 		ShouldMarshalPrettyJson(t,
 			Formula{
-				Inputs: UnpackTree{
-					"/": UnpackSpec{WareID: WareID{"demo", "asdf"}},
+				Inputs: FormulaInputs{
+					"/": WareID{"demo", "asdf"},
 				},
 				Action: FormulaAction{
 					Exec: []string{"/bin/hello", "world"},
@@ -21,15 +21,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 			`
 			{
 				"inputs": {
-					"/": {
-						"ware": "demo:asdf",
-						"opts": {
-							"uid": "",
-							"gid": "",
-							"mtime": "",
-							"sticky": false
-						}
-					}
+					"/": "demo:asdf"
 				},
 				"action": {
 					"exec": [
