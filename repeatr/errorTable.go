@@ -36,6 +36,7 @@ var ErrorTable = []struct {
 	// Jump a few numbers, then repeatr exit codes begin:
 	{ExitCode: 20 /* */, RepeatrError: ErrLocalCacheProblem},
 	// Let's give user job exit a nice round number:
+	{ExitCode: 31 /* */, RepeatrError: ErrJobInvalid},
 	{ExitCode: 32 /* */, RepeatrError: ErrJobUnsuccessful},
 	// Numbers do a big jump as we get into "you really shouldn't see these" territory...
 	{ExitCode: 110 /**/, RepeatrError: "" /*              */, RioError: rio.ErrNotImplemented},
