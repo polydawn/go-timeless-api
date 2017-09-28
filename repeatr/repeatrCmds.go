@@ -117,6 +117,16 @@ type ErrorCategory string
 
 const (
 	ErrUsage             = ErrorCategory("repeatr-usage-error")         // Indicates some piece of user input to a command was invalid and unrunnable.
+	ErrJobUnsuccessful   = ErrorCategory("repeatr-job-unsuccessful")    // Not an error -- indicates that the contained process exited nonzero.  TODO review if this needs an error category or just a reserved space in the exit code table.
 	ErrLocalCacheProblem = ErrorCategory("repeatr-local-cache-problem") // Indicates an error while while handling internal filesystem paths (for example, if an executor can't mkdir its workspace dirs).
-	ErrRPCBreakdown      = ErrorCategory("repeatr-rpc-breakdown")       // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
+
+	ErrWarehouseUnavailable = ErrorCategory("rio-warehouse-unavailable") // The corresponding rio error halted execution.
+	ErrWarehouseUnwritable  = ErrorCategory("rio-warehouse-unwritable")  // The corresponding rio error halted execution.
+	ErrWareNotFound         = ErrorCategory("rio-ware-not-found")        // The corresponding rio error halted execution.
+	ErrWareCorrupt          = ErrorCategory("rio-ware-corrupt")          // The corresponding rio error halted execution.
+	ErrWareHashMismatch     = ErrorCategory("rio-hash-mismatch")         // The corresponding rio error halted execution.
+	ErrCancelled            = ErrorCategory("rio-cancelled")             // The corresponding rio error halted execution.
+	ErrRioCacheProblem      = ErrorCategory("rio-local-cache-problem")   // The corresponding rio error halted execution.
+	ErrAssemblyInvalid      = ErrorCategory("rio-assembly-invalid")      // The corresponding rio error halted execution.
+	ErrRPCBreakdown         = ErrorCategory("repeatr-rpc-breakdown")     // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )

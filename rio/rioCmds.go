@@ -185,7 +185,7 @@ const (
 	ExitCancelled, ErrCancelled                       = ExitCode(8), ErrorCategory("rio-cancelled")             // The operation timed out or was cancelled
 	ExitLocalCacheProblem, ErrLocalCacheProblem       = ExitCode(9), ErrorCategory("rio-local-cache-problem")   // Indicates an error while either reading or writing to rio's local fileset caches.
 	ExitAssemblyInvalid, ErrAssemblyInvalid           = ExitCode(10), ErrorCategory("rio-assembly-invalid")     // Indicates an error in unpack or tree-unpack where the requested set of unpacks cannot assemble cleanly (e.g. a tree where a /file is a file and another unpack tries to seat something at /file/dir; this assembly is impossible).
-	ExitNotImplemented, ErrNotImplemented             = ExitCode(119), ErrorCategory("rio-not-implemented")     // The operation is not implemented, PRs welcome
+	ExitNotImplemented, ErrNotImplemented             = ExitCode(110), ErrorCategory("rio-not-implemented")     // The operation is not implemented, PRs welcome
 	ExitRPCBreakdown, ErrRPCBreakdown                 = ExitCode(120), ErrorCategory("rio-rpc-breakdown")       // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 	ExitTODO                                          = ExitCode(254)                                           // This exit code should be replaced with something more specific
 )
