@@ -32,6 +32,16 @@ type (
 		// TODO we want to add a polymorphic option here, e.g.
 		// one of 'Exec', 'Script', or 'Reshuffle' may be set.
 		Exec []string
+
+		// The working directory to set when invoking the executable.
+		// If not set, will be defaulted to "/task".
+		Cwd string `refmt:",omitempty"`
+
+		// Environment variables.
+		Env map[string]string `refmt:",omitempty"`
+
+		// Hostname to set inside the container (if the executor supports this -- not all do).
+		Hostname string `refmt:",omitempty"`
 	}
 
 	OutputSpec struct {

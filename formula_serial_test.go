@@ -41,7 +41,10 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 					"exec": [
 						"/bin/hello",
 						"world"
-					]
+					],
+					"cwd": "",
+					"env": null,
+					"hostname": ""
 				},
 				"outputs": {
 					"/saveme": {
