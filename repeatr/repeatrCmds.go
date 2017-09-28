@@ -116,7 +116,7 @@ func (r *Event_Result) SetError(err error) {
 type ErrorCategory string
 
 const (
-	ErrUsage        = ErrorCategory("repeatr-usage-error")    // Indicates some piece of user input to a command was invalid and unrunnable.
-	ErrExecutor     = ErrorCategory("repeatr-executor-error") // Indicates an executor failed to finish (or possibly even start) executing a formula's action.
-	ErrRPCBreakdown = ErrorCategory("repeatr-rpc-breakdown")  // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
+	ErrUsage             = ErrorCategory("repeatr-usage-error")         // Indicates some piece of user input to a command was invalid and unrunnable.
+	ErrLocalCacheProblem = ErrorCategory("repeatr-local-cache-problem") // Indicates an error while while handling internal filesystem paths (for example, if an executor can't mkdir its workspace dirs).
+	ErrRPCBreakdown      = ErrorCategory("repeatr-rpc-breakdown")       // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )
