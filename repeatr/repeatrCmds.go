@@ -19,9 +19,18 @@ import (
 type RunFunc func(
 	ctx context.Context, // Long-running call.  Cancellable.
 	formula api.Formula, // What formula to run.  Comes complete with fetch and save paths.
-	// TODO actually do need input support here
+	input InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
 ) (*api.RunRecord, error)
+
+/*
+	Holder for input control.  The zero value disable input.
+	(Disabled input is the norm: streaming inputs are only used
+	by 'twerk' mode, e.g. when you've given up on reproducible action.)
+*/
+type InputControl struct {
+	Chan <-chan string
+}
 
 /*
 	Monitoring configuration structs, and message types used.
