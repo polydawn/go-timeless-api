@@ -20,7 +20,7 @@ func TestFormulaHashing(t *testing.T) {
 			Exec: []string{"/bin/hello", "world"},
 		},
 		Outputs: map[AbsPath]OutputSpec{
-			"/saveme": {PackFmt: "tar"},
+			"/saveme": {PackType: "tar"},
 		},
 		FetchUrls: map[AbsPath][]WarehouseAddr{
 			"/": []WarehouseAddr{
@@ -54,7 +54,7 @@ func TestFormulaHashing(t *testing.T) {
 			}
 		})
 		t.Run("outputs should be present", func(t *testing.T) {
-			if !bytes.Contains(msg, []byte("packfmt")) {
+			if !bytes.Contains(msg, []byte("packtype")) {
 				t.Errorf("failed to find output spec")
 			}
 			if !bytes.Contains(msg, []byte("/saveme")) {
@@ -102,13 +102,13 @@ func TestFormulaHashing(t *testing.T) {
 		})
 		t.Run("outputs affect setupHash", func(t *testing.T) {
 			altFormula := baseFormula.Clone()
-			altFormula.Outputs["/addntl"] = OutputSpec{PackFmt: "somefmt"}
+			altFormula.Outputs["/addntl"] = OutputSpec{PackType: "somefmt"}
 			if baseHash == altFormula.SetupHash() {
 				t.Errorf("hash should have changed")
 			}
 			t.Run("output filters affect setupHash", func(t *testing.T) {
 				altFormula := baseFormula.Clone()
-				altFormula.Outputs["/saveme"] = OutputSpec{baseFormula.Outputs["/saveme"].PackFmt, FilesetFilters{Uid: "4000"}}
+				altFormula.Outputs["/saveme"] = OutputSpec{baseFormula.Outputs["/saveme"].PackType, FilesetFilters{Uid: "4000"}}
 				if baseHash == altFormula.SetupHash() {
 					t.Errorf("hash should have changed")
 				}
