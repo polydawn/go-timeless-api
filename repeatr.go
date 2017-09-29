@@ -18,7 +18,7 @@ type (
 		Action    FormulaAction
 		Outputs   map[AbsPath]OutputSpec
 		FetchUrls map[AbsPath][]WarehouseAddr
-		SaveUrls  map[AbsPath][]WarehouseAddr
+		SaveUrls  map[AbsPath]WarehouseAddr
 	}
 
 	/*
@@ -32,6 +32,16 @@ type (
 		// TODO we want to add a polymorphic option here, e.g.
 		// one of 'Exec', 'Script', or 'Reshuffle' may be set.
 		Exec []string
+
+		// The working directory to set when invoking the executable.
+		// If not set, will be defaulted to "/task".
+		Cwd AbsPath `refmt:",omitempty"`
+
+		// Environment variables.
+		Env map[string]string `refmt:",omitempty"`
+
+		// Hostname to set inside the container (if the executor supports this -- not all do).
+		Hostname string `refmt:",omitempty"`
 	}
 
 	OutputSpec struct {
@@ -59,7 +69,7 @@ func (f *Formula) Clone() (f2 Formula) {
 }
 
 type RunRecord struct {
-	UID       string             // random number, presumed globally unique.
+	Guid      string             // random number, presumed globally unique.
 	Time      int64              // time at start of build.
 	FormulaID SetupHash          // HID of formula ran.
 	Results   map[AbsPath]WareID // wares produced by the run!
@@ -73,4 +83,4 @@ type RunRecord struct {
 
 var RunRecord_AtlasEntry = atlas.BuildEntry(RunRecord{}).StructMap().Autogenerate().Complete()
 
-type RunRecordHash string // HID of RunRecord.  Includes UID, etc, so quite unique.  Prefer this to UID for primary key in storage (it's collision resistant).
+type RunRecordHash string // HID of RunRecord.  Includes guid, etc, so quite unique.  Prefer this to guid for primary key in storage (it's collision resistant).
