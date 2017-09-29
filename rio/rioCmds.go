@@ -127,8 +127,8 @@ type (
 	}
 
 	Event_Result struct {
-		WareID api.WareID
-		Error  *Error
+		WareID api.WareID `refmt:",omitempty"`
+		Error  *Error     `refmt:",omitempty"`
 	}
 )
 
