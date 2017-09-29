@@ -31,6 +31,7 @@ type UnpackFunc func(
 
 type PackFunc func(
 	ctx context.Context, // Long-running call.  Cancellable.
+	packType api.PackType, // The name of pack format to use.  (Most PackFunc impls support exactly one; a demux impl exists, and can route based on this string.)
 	path string, // The fileset to scan and pack (absolute path).
 	filters api.FilesetFilters, // Optionally: filters we should apply while unpacking.
 	warehouse api.WarehouseAddr, // Warehouse to save into (or blank to just scan).
