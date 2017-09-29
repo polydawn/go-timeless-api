@@ -23,9 +23,26 @@ import (
 	and the second part is the hash itself.
 */
 type WareID struct {
-	Type string
+	Type PackType
 	Hash string
 }
+
+/*
+	A PackType string identifies what kind of packing format is used when
+	packing a ware.  It's the first part of a WareID tuple.
+
+	Typically, the desired PackType is an argument when using packing tools;
+	whereas the PackType is communicated by the WareID when using unpack tools.
+
+	PackTypes are a simple [a-zA-Z0-9] string.  Colons in particular are not
+	allowable (since a PackType string is the first part of a WareID).
+*/
+type PackType string
+
+// n.b. there is no typedef for the WareID.Hash, because
+// *you never communicate them* outside of *the WareID* tuple:
+// they're technically meaningless without having
+// the PackType in hand to define their scope/encoding.
 
 func ParseWareID(x string) (WareID, error) {
 	if x == "" {
@@ -35,7 +52,7 @@ func ParseWareID(x string) (WareID, error) {
 	if len(ss) < 2 {
 		return WareID{}, fmt.Errorf("wareIDs must have contain a colon character (they are of form \"<type>:<hash>\")")
 	}
-	return WareID{ss[0], ss[1]}, nil
+	return WareID{PackType(ss[0]), ss[1]}, nil
 }
 
 func (x WareID) String() string {
@@ -43,9 +60,9 @@ func (x WareID) String() string {
 	case x.Type == "":
 		return ""
 	case x.Hash == "":
-		return x.Type + ":-"
+		return string(x.Type) + ":-"
 	default:
-		return x.Type + ":" + x.Hash
+		return string(x.Type) + ":" + x.Hash
 	}
 }
 
