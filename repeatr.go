@@ -45,8 +45,8 @@ type (
 	}
 
 	OutputSpec struct {
-		PackFmt string         `refmt:"packfmt"`
-		Filters FilesetFilters `refmt:",omitempty"`
+		PackType PackType       `refmt:"packtype"`
+		Filters  FilesetFilters `refmt:",omitempty"`
 	}
 
 	SetupHash string // HID of formula

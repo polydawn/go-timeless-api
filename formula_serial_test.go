@@ -17,7 +17,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 					Exec: []string{"/bin/hello", "world"},
 				},
 				Outputs: map[AbsPath]OutputSpec{
-					"/saveme": {PackFmt: "tar"},
+					"/saveme": {PackType: "tar"},
 				},
 				FetchUrls: map[AbsPath][]WarehouseAddr{
 					"/": []WarehouseAddr{
@@ -46,7 +46,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 				},
 				"outputs": {
 					"/saveme": {
-						"packfmt": "tar",
+						"packtype": "tar",
 						"filters": {
 							"uid": "",
 							"gid": "",
