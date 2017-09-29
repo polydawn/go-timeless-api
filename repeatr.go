@@ -35,7 +35,7 @@ type (
 
 		// The working directory to set when invoking the executable.
 		// If not set, will be defaulted to "/task".
-		Cwd string `refmt:",omitempty"`
+		Cwd AbsPath `refmt:",omitempty"`
 
 		// Environment variables.
 		Env map[string]string `refmt:",omitempty"`
