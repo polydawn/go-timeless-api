@@ -18,7 +18,7 @@ type (
 		Action    FormulaAction
 		Outputs   map[AbsPath]OutputSpec
 		FetchUrls map[AbsPath][]WarehouseAddr
-		SaveUrls  map[AbsPath][]WarehouseAddr
+		SaveUrls  map[AbsPath]WarehouseAddr
 	}
 
 	/*

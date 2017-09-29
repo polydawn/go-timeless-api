@@ -25,10 +25,8 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 						"https+ca://mirror.wahoo.io/timeless/assets/",
 					},
 				},
-				SaveUrls: map[AbsPath][]WarehouseAddr{
-					"/saveme": []WarehouseAddr{
-						"file+ca://./wares/",
-					},
+				SaveUrls: map[AbsPath]WarehouseAddr{
+					"/saveme": "file+ca://./wares/",
 				},
 			},
 			RepeatrAtlas,
@@ -64,9 +62,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 					]
 				},
 				"saveUrls": {
-					"/saveme": [
-						"file+ca://./wares/"
-					]
+					"/saveme": "file+ca://./wares/"
 				}
 			}`,
 		)

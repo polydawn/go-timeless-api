@@ -28,10 +28,8 @@ func TestFormulaHashing(t *testing.T) {
 				"https+ca://mirror.wahoo.io/timeless/assets/",
 			},
 		},
-		SaveUrls: map[AbsPath][]WarehouseAddr{
-			"/saveme": []WarehouseAddr{
-				"file+ca://./wares/",
-			},
+		SaveUrls: map[AbsPath]WarehouseAddr{
+			"/saveme": "file+ca://./wares/",
 		},
 	}
 
@@ -125,7 +123,7 @@ func TestFormulaHashing(t *testing.T) {
 		})
 		t.Run("saveUrls do not affect setupHash", func(t *testing.T) {
 			altFormula := baseFormula.Clone()
-			altFormula.SaveUrls["/addntl"] = []WarehouseAddr{}
+			altFormula.SaveUrls["/addntl"] = WarehouseAddr("")
 			if baseHash != altFormula.SetupHash() {
 				t.Errorf("hash should not have changed")
 			}
