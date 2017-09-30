@@ -69,3 +69,16 @@ func ReboxRioError(err error) error {
 		return errcat.Errorf(ErrRPCBreakdown, "protocol error: unexpected error category type %T from rio (error was: %s)", category, err)
 	}
 }
+
+func GetExitCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	category := errcat.Category(err)
+	for _, row := range ErrorTable {
+		if category == row.RepeatrError {
+			return row.ExitCode
+		}
+	}
+	panic(errcat.Errorf(ErrRPCBreakdown, "no exit code mapping for error category %q", category))
+}
