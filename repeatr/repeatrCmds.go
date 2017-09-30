@@ -46,9 +46,9 @@ type (
 	// (The 'Result' message seen on the wire, but converted into returns;
 	// it is never sent to the Monitor.Chan.)
 	Event struct {
-		Log    Event_Log    `refmt:"log,omitempty"`
-		Output Event_Output `refmt:"txt,omitempty"`
-		Result Event_Result `refmt:"result,omitempty"`
+		Log    *Event_Log    `refmt:"log,omitempty"`
+		Output *Event_Output `refmt:"txt,omitempty"`
+		Result *Event_Result `refmt:"result,omitempty"`
 	}
 
 	// Logs from repeatr code.
