@@ -8,6 +8,26 @@ import (
 	"go.polydawn.net/go-timeless-api"
 )
 
+/*
+	Merges 'defaults' into 'user' filters, setting any blanks in the 'user'
+	filters to the value from 'defaults', and returning the result.
+*/
+func MergeFilters(user api.FilesetFilters, defaults api.FilesetFilters) api.FilesetFilters {
+	if user.Uid == "" {
+		user.Uid = defaults.Uid
+	}
+	if user.Gid == "" {
+		user.Gid = defaults.Gid
+	}
+	if user.Mtime == "" {
+		user.Mtime = defaults.Mtime
+	}
+	if user.Sticky == "" {
+		user.Sticky = defaults.Sticky
+	}
+	return user
+}
+
 type FilterPurpose bool
 
 const (
