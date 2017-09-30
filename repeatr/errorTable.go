@@ -35,6 +35,7 @@ var ErrorTable = []struct {
 	{ExitCode: 10 /* */, RepeatrError: ErrAssemblyInvalid /*      */, RioError: rio.ErrAssemblyInvalid},      // Translation of rio errors.  (Strings even stay same; types do not.)
 	// Jump a few numbers, then repeatr exit codes begin:
 	{ExitCode: 20 /* */, RepeatrError: ErrLocalCacheProblem},
+	{ExitCode: 21 /* */, RepeatrError: ErrExecutor},
 	// Let's give user job exit a nice round number:
 	{ExitCode: 31 /* */, RepeatrError: ErrJobInvalid},
 	{ExitCode: 32 /* */, RepeatrError: ErrJobUnsuccessful},
