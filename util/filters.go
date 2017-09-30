@@ -111,12 +111,14 @@ func ProcessFilters(ff api.FilesetFilters, mode FilterPurpose) (uf FilesetFilter
 		if err != nil {
 			return uf, fmt.Errorf("filter mtime parameter starting with '@' must be unix timestamp integer")
 		}
-		*uf.Mtime = time.Unix(int64(ut), 0)
+		t := time.Unix(int64(ut), 0)
+		uf.Mtime = &t
 	default:
-		*uf.Mtime, err = time.Parse(time.RFC3339, ff.Mtime)
+		t, err := time.Parse(time.RFC3339, ff.Mtime)
 		if err != nil {
 			return uf, fmt.Errorf("filter mtime parameter must be either 'keep', a unix timestamp integer beginning with '@', or an RFC3339 date string")
 		}
+		uf.Mtime = &t
 	}
 
 	// Parse sticky -- relatively simple.
