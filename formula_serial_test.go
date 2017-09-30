@@ -51,7 +51,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 							"uid": "",
 							"gid": "",
 							"mtime": "",
-							"sticky": false
+							"sticky": ""
 						}
 					}
 				},

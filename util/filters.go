@@ -99,13 +99,22 @@ func ProcessFilters(ff api.FilesetFilters, mode FilterPurpose) (uf FilesetFilter
 		}
 	}
 
-	// Sticky, mercy me, is simple.
-	//  But we do force it to true for pack mode.
-	switch mode {
-	case FilterPurposePack:
+	// Parse sticky -- relatively simple.
+	//  But despite being logically a bool, requires three-value logic to communicate "default".
+	switch ff.Sticky {
+	case "":
+		switch mode {
+		case FilterPurposePack:
+			uf.Sticky = true
+		case FilterPurposeUnpack:
+			uf.Sticky = false
+		}
+	case "keep":
 		uf.Sticky = true
-	case FilterPurposeUnpack:
-		uf.Sticky = ff.Sticky
+	case "zero":
+		uf.Sticky = false
+	default:
+		return uf, fmt.Errorf("sticky mode either 'keep' or 'zero'")
 	}
 
 	return
