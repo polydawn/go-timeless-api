@@ -140,18 +140,24 @@ type (
 	(For comparison, your system tar command tends to do the same:
 	sticky bits are not unpacked by default because of the security implications
 	if the user is unwary.)
+
+	Despite being a simple bool, Stick is still serialized as a string:
+	either "keep" or "zero".  A blank string is used as a ternary value that
+	means "default", contextually -- this is necessary for communicating
+	filter settings through layers of the stack without ambiguity in deeper
+	layers about whether or not a user actually requested a specific setting.
 */
 type FilesetFilters struct {
 	Uid    string `refmt:"uid,omitempty"`
 	Gid    string `refmt:"gid,omitempty"`
 	Mtime  string `refmt:"mtime,omitempty"`
-	Sticky bool   `refmt:"sticky,omitempty"`
+	Sticky string `refmt:"sticky,omitempty"`
 }
 
 var FilesetFilters_AtlasEntry = atlas.BuildEntry(FilesetFilters{}).StructMap().Autogenerate().Complete()
 
 var (
-	Filter_NoMutation     = FilesetFilters{"keep", "keep", "keep", true}                 // The default filters on repeatr inputs.
-	Filter_DefaultFlatten = FilesetFilters{"1000", "1000", "2010-01-01T00:00:00Z", true} // The default filters on repeatr outputs and rio pack.
-	Filter_LowPriv        = FilesetFilters{"mine", "mine", "keep", false}                // The default filters on rio unpack.
+	Filter_NoMutation     = FilesetFilters{"keep", "keep", "keep", "keep"}                 // The default filters on repeatr inputs.
+	Filter_DefaultFlatten = FilesetFilters{"1000", "1000", "2010-01-01T00:00:00Z", "keep"} // The default filters on repeatr outputs and rio pack.
+	Filter_LowPriv        = FilesetFilters{"mine", "mine", "keep", "zero"}                 // The default filters on rio unpack.
 )
