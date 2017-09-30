@@ -130,5 +130,6 @@ const (
 	ErrCancelled            = ErrorCategory("rio-cancelled")             // The corresponding rio error halted execution.
 	ErrRioCacheProblem      = ErrorCategory("rio-local-cache-problem")   // The corresponding rio error halted execution.
 	ErrAssemblyInvalid      = ErrorCategory("rio-assembly-invalid")      // The corresponding rio error halted execution.
+	ErrPackInvalid          = ErrorCategory("rio-pack-invalid")          // The corresponding rio error halted execution.
 	ErrRPCBreakdown         = ErrorCategory("repeatr-rpc-breakdown")     // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )
