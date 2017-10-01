@@ -63,7 +63,7 @@ func ReboxRioError(err error) error {
 			if row.RepeatrError == "" {
 				continue
 			}
-			return errcat.Recategorize(err, row.RepeatrError)
+			return errcat.Recategorize(row.RepeatrError, err)
 		}
 		return errcat.Errorf(ErrRPCBreakdown, "protocol error: unexpected error category %q from rio (error was: %s)", category, err)
 	default:
