@@ -13,10 +13,42 @@ import (
 )
 
 type (
+	/*
+		FormulaUnion is a serialization helper struct which composes several
+		structures that are typically saved in the same file for convenience.
+		FormulaUnion is not used in any function APIs -- component fields are.
+	*/
+	FormulaUnion struct {
+		Formula Formula
+		Context *FormulaContext `refmt:",omitempty"`
+	}
+
+	/*
+		The essense of Repeatr: a Formula is full instructions for populating
+		a sandbox and running a process in it, then collecting and saving
+		output filesets.
+
+		The formula, serialized and hashed, produces a SetupHash.
+		This SetupHash string is effectively a memoization key for the
+		entire sandboxed computation.
+	*/
 	Formula struct {
-		Inputs    map[AbsPath]WareID
-		Action    FormulaAction
-		Outputs   map[AbsPath]OutputSpec
+		Inputs  map[AbsPath]WareID
+		Action  FormulaAction
+		Outputs map[AbsPath]OutputSpec
+	}
+
+	/*
+		FormulaContext contains the remaining references that are needed to
+		actually evaluate a Formula.  Locations for fetching inputs and
+		storing outputs, etc.
+
+		FormulaContext is separated out from the Formula because this
+		information is *not* part of the SetupHash -- it's not relevant to
+		the reproducibility of the setup or memoization of the computation.
+		They're often serialized in the same file though (see FormulaUnion).
+	*/
+	FormulaContext struct {
 		FetchUrls map[AbsPath][]WarehouseAddr
 		SaveUrls  map[AbsPath]WarehouseAddr
 	}
@@ -53,14 +85,11 @@ type (
 )
 
 var (
-	Formula_AtlasEntry    = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
-	FormulaCas_AtlasEntry = atlas.BuildEntry(Formula{}).StructMap().
-				AddField("Inputs", atlas.StructMapEntry{SerialName: "inputs"}).
-				AddField("Action", atlas.StructMapEntry{SerialName: "action"}).
-				AddField("Outputs", atlas.StructMapEntry{SerialName: "outputs"}).
-				Complete() // Note the explicit lack of fetchUrls and saveUrls.
-	FormulaAction_AtlasEntry = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
-	OutputSpec_AtlasEntry    = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
+	FormulaUnion_AtlasEntry   = atlas.BuildEntry(FormulaUnion{}).StructMap().Autogenerate().Complete()
+	Formula_AtlasEntry        = atlas.BuildEntry(Formula{}).StructMap().Autogenerate().Complete()
+	FormulaContext_AtlasEntry = atlas.BuildEntry(FormulaContext{}).StructMap().Autogenerate().Complete()
+	FormulaAction_AtlasEntry  = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
+	OutputSpec_AtlasEntry     = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
 
 func (f *Formula) Clone() (f2 Formula) {

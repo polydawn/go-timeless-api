@@ -22,15 +22,6 @@ func TestFormulaHashing(t *testing.T) {
 		Outputs: map[AbsPath]OutputSpec{
 			"/saveme": {PackType: "tar"},
 		},
-		FetchUrls: map[AbsPath][]WarehouseAddr{
-			"/": []WarehouseAddr{
-				"https+ca://ports.polydawn.io/assets/",
-				"https+ca://mirror.wahoo.io/timeless/assets/",
-			},
-		},
-		SaveUrls: map[AbsPath]WarehouseAddr{
-			"/saveme": "file+ca://./wares/",
-		},
 	}
 
 	t.Run("the CAS encoding should have the right stuff", func(t *testing.T) {
@@ -59,22 +50,6 @@ func TestFormulaHashing(t *testing.T) {
 			}
 			if !bytes.Contains(msg, []byte("/saveme")) {
 				t.Errorf("failed to find output spec")
-			}
-		})
-		t.Run("fetchUrls should be absent", func(t *testing.T) {
-			if bytes.Contains(msg, []byte("fetch")) {
-				t.Errorf("should not find fetchUrls")
-			}
-			if bytes.Contains(msg, []byte("https+ca")) {
-				t.Errorf("should not find fetchUrls")
-			}
-		})
-		t.Run("saveUrls should be absent", func(t *testing.T) {
-			if bytes.Contains(msg, []byte("saveUrl")) {
-				t.Errorf("should not find saveUrls")
-			}
-			if bytes.Contains(msg, []byte("file+ca")) {
-				t.Errorf("should not find saveUrls")
 			}
 		})
 	})
@@ -113,20 +88,6 @@ func TestFormulaHashing(t *testing.T) {
 					t.Errorf("hash should have changed")
 				}
 			})
-		})
-		t.Run("fetchUrls do not affect setupHash", func(t *testing.T) {
-			altFormula := baseFormula.Clone()
-			altFormula.FetchUrls["/addntl"] = []WarehouseAddr{}
-			if baseHash != altFormula.SetupHash() {
-				t.Errorf("hash should not have changed")
-			}
-		})
-		t.Run("saveUrls do not affect setupHash", func(t *testing.T) {
-			altFormula := baseFormula.Clone()
-			altFormula.SaveUrls["/addntl"] = WarehouseAddr("")
-			if baseHash != altFormula.SetupHash() {
-				t.Errorf("hash should not have changed")
-			}
 		})
 	})
 }

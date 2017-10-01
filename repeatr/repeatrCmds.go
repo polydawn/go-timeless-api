@@ -18,7 +18,8 @@ import (
 
 type RunFunc func(
 	ctx context.Context, // Long-running call.  Cancellable.
-	formula api.Formula, // What formula to run.  Comes complete with fetch and save paths.
+	formula api.Formula, // What formula to run.
+	formulaContext api.FormulaContext, // Additional information required to run (e.g. fetch and save warehouse addrs).
 	input InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
 ) (*api.RunRecord, error)
