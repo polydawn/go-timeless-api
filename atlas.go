@@ -10,14 +10,16 @@ var rioAtlasEntries = []*atlas.AtlasEntry{
 }
 
 var repeatrAtlasEntries = []*atlas.AtlasEntry{
+	FormulaUnion_AtlasEntry,
 	Formula_AtlasEntry,
+	FormulaContext_AtlasEntry,
 	FormulaAction_AtlasEntry,
 	OutputSpec_AtlasEntry,
 	RunRecord_AtlasEntry,
 }
 
 var formulaCasAtlasEntries = []*atlas.AtlasEntry{
-	FormulaCas_AtlasEntry,
+	Formula_AtlasEntry,
 	FormulaAction_AtlasEntry,
 	OutputSpec_AtlasEntry,
 }
