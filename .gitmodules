@@ -7,3 +7,6 @@
 [submodule ".gopath/src/github.com/pmezard/go-difflib"]
 	path = .gopath/src/github.com/pmezard/go-difflib
 	url = https://github.com/pmezard/go-difflib
+[submodule ".gopath/src/github.com/google/go-cmp"]
+	path = .gopath/src/github.com/google/go-cmp
+	url = https://github.com/google/go-cmp
