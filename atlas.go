@@ -14,6 +14,7 @@ var repeatrAtlasEntries = []*atlas.AtlasEntry{
 	Formula_AtlasEntry,
 	FormulaContext_AtlasEntry,
 	FormulaAction_AtlasEntry,
+	FormulaUserinfo_AtlasEntry,
 	OutputSpec_AtlasEntry,
 	RunRecord_AtlasEntry,
 }
@@ -21,6 +22,7 @@ var repeatrAtlasEntries = []*atlas.AtlasEntry{
 var formulaCasAtlasEntries = []*atlas.AtlasEntry{
 	Formula_AtlasEntry,
 	FormulaAction_AtlasEntry,
+	FormulaUserinfo_AtlasEntry,
 	OutputSpec_AtlasEntry,
 }
 
