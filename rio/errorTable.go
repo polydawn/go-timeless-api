@@ -26,13 +26,21 @@ var ErrorTable = []struct {
 /*
 	Utility function for Rio.
 
-	Returns the exit code for a given rio.ErrorCategory.
+	Returns the exit code for a given ErrorCategory.
 */
-func GetExitCode(err error) int {
+func ExitCodeForError(err error) int {
 	if err == nil {
 		return 0
 	}
-	category := errcat.Category(err)
+	return ExitCodeForCategory(errcat.Category(err))
+}
+
+/*
+	Utility function for Rio.
+
+	Returns the exit code for a given ErrorCategory.
+*/
+func ExitCodeForCategory(category interface{}) int {
 	for _, row := range ErrorTable {
 		if category == row.RioError {
 			return row.ExitCode
