@@ -1,6 +1,8 @@
 package repeatr
 
 import (
+	"fmt"
+
 	"github.com/polydawn/go-errcat"
 )
 
@@ -33,11 +35,16 @@ func (r *Event_Result) SetError(err error) {
 	}
 	r.Error = &Error{}
 	if e2, ok := err.(errcat.Error); ok {
-		r.Error.Category_ = errcat.Category(err).(ErrorCategory)
-		r.Error.Message_ = e2.Message()
+		cat := errcat.Category(err)
+		r.Error.Category_, ok = cat.(ErrorCategory)
+		if !ok {
+			r.Error.Category_ = ErrRPCBreakdown
+			r.Error.Message_ = fmt.Sprintf("rpc breakdown: unfiltered error category %q -- original message: ", cat)
+		}
+		r.Error.Message_ += e2.Message()
 		r.Error.Details_ = e2.Details()
 	} else {
-		r.Error.Category_ = ErrRPCBreakdown // :/
+		r.Error.Category_ = ErrRPCBreakdown
 		r.Error.Message_ = err.Error()
 	}
 }
