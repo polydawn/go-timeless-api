@@ -73,6 +73,18 @@ func ExitCodeForCategory(category interface{}) int {
 }
 
 /*
+	Helper function for anyone consuming Repeatr by exec.
+*/
+func CategoryForExitCode(code int) ErrorCategory {
+	for _, row := range ErrorTable {
+		if code == row.ExitCode {
+			return row.RepeatrError
+		}
+	}
+	return ErrRPCBreakdown
+}
+
+/*
 	Utility function for Repeatr.
 
 	Filter errors from rio into the corresponding repeatr.ErrorCategory.

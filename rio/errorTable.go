@@ -48,3 +48,15 @@ func ExitCodeForCategory(category interface{}) int {
 	}
 	panic(errcat.Errorf(ErrRPCBreakdown, "no exit code mapping for error category %q", category))
 }
+
+/*
+	Helper function for anyone consuming Rio by exec.
+*/
+func CategoryForExitCode(code int) ErrorCategory {
+	for _, row := range ErrorTable {
+		if code == row.ExitCode {
+			return row.RioError
+		}
+	}
+	return ErrRPCBreakdown
+}
