@@ -153,6 +153,7 @@ const (
 	ErrLocalCacheProblem    = ErrorCategory("rio-local-cache-problem")   // Indicates an error while either reading or writing to rio's local fileset caches.
 	ErrAssemblyInvalid      = ErrorCategory("rio-assembly-invalid")      // Indicates an error in unpack or tree-unpack where the requested set of unpacks cannot assemble cleanly (e.g. a tree where a /file is a file and another unpack tries to seat something at /file/dir; this assembly is impossible).
 	ErrPackInvalid          = ErrorCategory("rio-pack-invalid")          // Indicates a pack could not be performed, perhaps because you tried to pack a file using a format that must start with dirs, or because of permission errors or other misfortunes during the pack.
+	ErrInoperablePath       = ErrorCategory("rio-inoperable-path")       // Indicates pack or unpack failed while reading or writing the target local filesystem path (permissions errors, etc, are likely causes).
 	ErrNotImplemented       = ErrorCategory("rio-not-implemented")       // The operation is not implemented, PRs welcome
 	ErrRPCBreakdown         = ErrorCategory("rio-rpc-breakdown")         // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )

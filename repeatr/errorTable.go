@@ -34,6 +34,7 @@ var ErrorTable = []struct {
 	{ExitCode: 9 /*  */, RepeatrError: ErrRioCacheProblem /*      */, RioError: rio.ErrLocalCacheProblem},    // Translation of rio errors.  (Strings even stay same; types do not.)
 	{ExitCode: 10 /* */, RepeatrError: ErrAssemblyInvalid /*      */, RioError: rio.ErrAssemblyInvalid},      // Translation of rio errors.  (Strings even stay same; types do not.)
 	{ExitCode: 11 /* */, RepeatrError: ErrPackInvalid /*          */, RioError: rio.ErrPackInvalid},          // Translation of rio errors.  (Strings even stay same; types do not.)
+	{ExitCode: 12 /* */, RepeatrError: ErrInoperablePath /*       */, RioError: rio.ErrInoperablePath},       // Translation of rio errors.  (Strings even stay same; types do not.)
 	// Jump a few numbers, then repeatr exit codes begin:
 	{ExitCode: 20 /* */, RepeatrError: ErrLocalCacheProblem},
 	{ExitCode: 21 /* */, RepeatrError: ErrExecutor},

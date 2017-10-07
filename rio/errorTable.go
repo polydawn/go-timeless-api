@@ -19,6 +19,7 @@ var ErrorTable = []struct {
 	{ExitCode: 9 /*  */, RioError: ErrLocalCacheProblem},
 	{ExitCode: 10 /* */, RioError: ErrAssemblyInvalid},
 	{ExitCode: 11 /* */, RioError: ErrPackInvalid},
+	{ExitCode: 12 /* */, RioError: ErrInoperablePath},
 	{ExitCode: 110 /**/, RioError: ErrNotImplemented},
 	{ExitCode: 120 /**/, RioError: ErrRPCBreakdown},
 }
