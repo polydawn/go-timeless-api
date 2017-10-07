@@ -36,6 +36,15 @@ type PackFunc func(
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
 
+type ScanFunc func(
+	ctx context.Context, // Long-running call.  Cancellable.
+	packType api.PackType, // The name of pack format.
+	filters api.FilesetFilters, // Optionally: filters we should apply while unpacking.
+	placementMode PlacementMode, // For scanning only "None" (cache; the default) and "Direct" (don't cache) are valid.
+	addr api.WarehouseAddr, // The *one* warehouse to fetch from.  Must be a monowarehouse (not a CA-mode).
+	monitor Monitor, // Optionally: callbacks for progress monitoring.
+) (api.WareID, error)
+
 type MirrorFunc func(
 	ctx context.Context, // Long-running call.  Cancellable.
 	wareID api.WareID, // What wareID to mirror.
