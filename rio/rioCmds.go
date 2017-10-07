@@ -14,8 +14,6 @@ package rio
 import (
 	"context"
 
-	"github.com/polydawn/go-errcat"
-
 	"go.polydawn.net/go-timeless-api"
 )
 
@@ -133,61 +131,19 @@ type (
 	}
 )
 
-/*
-	`errcat.Error` implementor with `rio.ErrorCategory` concrete category.
-
-	This is necessary for deserialization in client APIs to yield correctly typed categories.
-	Note that it does not enforce a check that the error category is from the package's
-	enumerated constants when deserializing.
-*/
-type Error struct {
-	Category_ ErrorCategory     `json:"category"          refmt:"category"`
-	Message_  string            `json:"message"           refmt:"message"`
-	Details_  map[string]string `json:"details,omitempty" refmt:"details,omitempty"`
-}
-
-func (e *Error) Category() interface{}      { return e.Category_ }
-func (e *Error) Message() string            { return e.Message_ }
-func (e *Error) Details() map[string]string { return e.Details_ }
-func (e *Error) Error() string              { return e.Message_ }
-
-/*
-	Helper to set the Error field of the result message structure,
-	handling type conversion checks.
-*/
-func (r *Event_Result) SetError(err error) {
-	if err == nil {
-		r.Error = nil
-		return
-	}
-	r.Error = &Error{}
-	if e2, ok := err.(errcat.Error); ok {
-		r.Error.Category_ = errcat.Category(err).(ErrorCategory)
-		r.Error.Message_ = e2.Message()
-		r.Error.Details_ = e2.Details()
-	} else {
-		r.Error.Category_ = ErrRPCBreakdown // :/
-		r.Error.Message_ = err.Error()
-	}
-}
-
 type ErrorCategory string
-type ExitCode int
 
 const (
-	ExitSuccess                                       = ExitCode(0)
-	ExitUsage, ErrUsage                               = ExitCode(1), ErrorCategory("rio-usage-error")           // Indicates some piece of user input to a command was invalid and unrunnable.
-	ExitPanic                                         = ExitCode(2)                                             // Placeholder.  We don't use this.  '2' happens when golang exits due to panic.
-	ExitWarehouseUnavailable, ErrWarehouseUnavailable = ExitCode(3), ErrorCategory("rio-warehouse-unavailable") // Warehouse 404.
-	ExitWarehouseUnwritable, ErrWarehouseUnwritable   = ExitCode(4), ErrorCategory("rio-warehouse-unwritable")  // Indicates a warehouse failed to accept a write operation.  The Warehouse is having a bad day.  ("unauthorized" is a different error category.)
-	ExitWareNotFound, ErrWareNotFound                 = ExitCode(5), ErrorCategory("rio-ware-not-found")        // Ware 404 -- warehouse appeared online, but the requested ware isn't in it.
-	ExitWareCorrupt, ErrWareCorrupt                   = ExitCode(6), ErrorCategory("rio-ware-corrupt")          // Incidates a ware retreival started, but during unpacking it was found to be malformed.
-	ExitHashMismatch, ErrWareHashMismatch             = ExitCode(7), ErrorCategory("rio-hash-mismatch")         // Returned when fetching and unpacking a ware gets results in a different content hash than we requested.  (This is distinct from ErrWareCorrupt because a full fileset *was* able to be unpacked; it's just not the one we asked for.)
-	ExitCancelled, ErrCancelled                       = ExitCode(8), ErrorCategory("rio-cancelled")             // The operation timed out or was cancelled
-	ExitLocalCacheProblem, ErrLocalCacheProblem       = ExitCode(9), ErrorCategory("rio-local-cache-problem")   // Indicates an error while either reading or writing to rio's local fileset caches.
-	ExitAssemblyInvalid, ErrAssemblyInvalid           = ExitCode(10), ErrorCategory("rio-assembly-invalid")     // Indicates an error in unpack or tree-unpack where the requested set of unpacks cannot assemble cleanly (e.g. a tree where a /file is a file and another unpack tries to seat something at /file/dir; this assembly is impossible).
-	ExitPackInvalid, ErrPackInvalid                   = ExitCode(11), ErrorCategory("rio-pack-invalid")         // Indicates a pack could not be performed, perhaps because you tried to pack a file using a format that must start with dirs, or because of permission errors or other misfortunes during the pack.
-	ExitNotImplemented, ErrNotImplemented             = ExitCode(110), ErrorCategory("rio-not-implemented")     // The operation is not implemented, PRs welcome
-	ExitRPCBreakdown, ErrRPCBreakdown                 = ExitCode(120), ErrorCategory("rio-rpc-breakdown")       // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
-	ExitTODO                                          = ExitCode(254)                                           // This exit code should be replaced with something more specific
+	ErrUsage                = ErrorCategory("rio-usage-error")           // Indicates some piece of user input to a command was invalid and unrunnable.
+	ErrWarehouseUnavailable = ErrorCategory("rio-warehouse-unavailable") // Warehouse 404.
+	ErrWarehouseUnwritable  = ErrorCategory("rio-warehouse-unwritable")  // Indicates a warehouse failed to accept a write operation.  The Warehouse is having a bad day.  ("unauthorized" is a different error category.)
+	ErrWareNotFound         = ErrorCategory("rio-ware-not-found")        // Ware 404 -- warehouse appeared online, but the requested ware isn't in it.
+	ErrWareCorrupt          = ErrorCategory("rio-ware-corrupt")          // Incidates a ware retreival started, but during unpacking it was found to be malformed.
+	ErrWareHashMismatch     = ErrorCategory("rio-hash-mismatch")         // Returned when fetching and unpacking a ware gets results in a different content hash than we requested.  (This is distinct from ErrWareCorrupt because a full fileset *was* able to be unpacked; it's just not the one we asked for.)
+	ErrCancelled            = ErrorCategory("rio-cancelled")             // The operation timed out or was cancelled
+	ErrLocalCacheProblem    = ErrorCategory("rio-local-cache-problem")   // Indicates an error while either reading or writing to rio's local fileset caches.
+	ErrAssemblyInvalid      = ErrorCategory("rio-assembly-invalid")      // Indicates an error in unpack or tree-unpack where the requested set of unpacks cannot assemble cleanly (e.g. a tree where a /file is a file and another unpack tries to seat something at /file/dir; this assembly is impossible).
+	ErrPackInvalid          = ErrorCategory("rio-pack-invalid")          // Indicates a pack could not be performed, perhaps because you tried to pack a file using a format that must start with dirs, or because of permission errors or other misfortunes during the pack.
+	ErrNotImplemented       = ErrorCategory("rio-not-implemented")       // The operation is not implemented, PRs welcome
+	ErrRPCBreakdown         = ErrorCategory("rio-rpc-breakdown")         // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )

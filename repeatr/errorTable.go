@@ -47,8 +47,48 @@ var ErrorTable = []struct {
 }
 
 /*
+	Utility function for Repeatr.
+
+	Returns the exit code for a given ErrorCategory.
+*/
+func ExitCodeForError(err error) int {
+	if err == nil {
+		return 0
+	}
+	return ExitCodeForCategory(errcat.Category(err))
+}
+
+/*
+	Utility function for Repeatr.
+
+	Returns the exit code for a given ErrorCategory.
+*/
+func ExitCodeForCategory(category interface{}) int {
+	for _, row := range ErrorTable {
+		if category == row.RepeatrError {
+			return row.ExitCode
+		}
+	}
+	panic(errcat.Errorf(ErrRPCBreakdown, "no exit code mapping for error category %q", category))
+}
+
+/*
+	Helper function for anyone consuming Repeatr by exec.
+*/
+func CategoryForExitCode(code int) ErrorCategory {
+	for _, row := range ErrorTable {
+		if code == row.ExitCode {
+			return row.RepeatrError
+		}
+	}
+	return ErrRPCBreakdown
+}
+
+/*
+	Utility function for Repeatr.
+
 	Filter errors from rio into the corresponding repeatr.ErrorCategory.
-	Returns repeatr.ErrRPCBreakdown if unexpected errors.
+	Returns repeatr.ErrRPCBreakdown for unexpected errors.
 */
 func ReboxRioError(err error) error {
 	category := errcat.Category(err)
@@ -69,17 +109,4 @@ func ReboxRioError(err error) error {
 	default:
 		return errcat.Errorf(ErrRPCBreakdown, "protocol error: unexpected error category type %T from rio (error was: %s)", category, err)
 	}
-}
-
-func GetExitCode(err error) int {
-	if err == nil {
-		return 0
-	}
-	category := errcat.Category(err)
-	for _, row := range ErrorTable {
-		if category == row.RepeatrError {
-			return row.ExitCode
-		}
-	}
-	panic(errcat.Errorf(ErrRPCBreakdown, "no exit code mapping for error category %q", category))
 }
