@@ -8,6 +8,7 @@ import (
 
 var Atlas = atlas.MustBuild(
 	atlas.BuildEntry(Event{}).StructMap().Autogenerate().Complete(),
+	atlas.BuildEntry(Event_Log{}).StructMap().Autogenerate().Complete(),
 	atlas.BuildEntry(Event_Progress{}).StructMap().Autogenerate().Complete(),
 	atlas.BuildEntry(Event_Result{}).StructMap().Autogenerate().Complete(),
 	atlas.BuildEntry(Error{}).StructMap().Autogenerate().Complete(),

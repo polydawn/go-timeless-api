@@ -13,6 +13,7 @@ package rio
 
 import (
 	"context"
+	"time"
 
 	"go.polydawn.net/go-timeless-api"
 )
@@ -109,8 +110,20 @@ type (
 		library's union message support becomes available.)
 	*/
 	Event struct {
+		Log      *Event_Log      `refmt:"log,omitempty"`
 		Progress *Event_Progress `refmt:"prog,omitempty"`
 		Result   *Event_Result   `refmt:"result,omitempty"`
+	}
+
+	/*
+		Logs of major events.  (Progress bars are a separate thing; this is
+		for e.g. "tried warehouse; failed" or "warehouse %x: ware %x 404".)
+	*/
+	Event_Log struct {
+		Time   time.Time   `refmt:"t"`
+		Level  LogLevel    `refmt:"lvl"`
+		Msg    string      `refmt:"msg"`
+		Detail [][2]string `refmt:"detail,omitempty"`
 	}
 
 	/*
@@ -156,4 +169,13 @@ const (
 	ErrInoperablePath       = ErrorCategory("rio-inoperable-path")       // Indicates pack or unpack failed while reading or writing the target local filesystem path (permissions errors, etc, are likely causes).
 	ErrNotImplemented       = ErrorCategory("rio-not-implemented")       // The operation is not implemented, PRs welcome
 	ErrRPCBreakdown         = ErrorCategory("rio-rpc-breakdown")         // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
+)
+
+type LogLevel int8
+
+const (
+	LogError LogLevel = 4 // Error log lines, if used, mean the program is on its way to exiting non-zero.  If used more than once, all but the first are other serious failures to clean up gracefully.
+	LogWarn  LogLevel = 3 // Warning logs are for systems which have failed, but in acceptable ways; for example, a warehouse that's not online (but a fallback is, so overall we proceeded happily).
+	LogInfo  LogLevel = 2 // Info logs are statements about control flow, for exmaple, which warehouses have been tried in what order.
+	LogDebug LogLevel = 1 // Debug logs are off by default.  They may get down to the resolution of called per-file in a transmat, for example.
 )
