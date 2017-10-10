@@ -105,3 +105,18 @@ const (
 	LogInfo  LogLevel = 2 // Info logs are statements about control flow, for exmaple, which warehouses have been tried in what order.
 	LogDebug LogLevel = 1 // Debug logs are off by default.  They may get down to the resolution of called per-file in a transmat, for example.
 )
+
+func (ll LogLevel) String() string {
+	switch ll {
+	case LogError:
+		return "error"
+	case LogWarn:
+		return "warn"
+	case LogInfo:
+		return "info"
+	case LogDebug:
+		return "debug"
+	default:
+		return "invalid"
+	}
+}
