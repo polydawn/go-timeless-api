@@ -51,11 +51,12 @@ type (
 	}
 
 	// Logs from repeatr code.
+	// May include logs proxied up from rio.
 	Event_Log struct {
-		Time  time.Time   `refmt:"t"`
-		Level int         `refmt:"lvl"`
-		Msg   string      `refmt:"msg"`
-		Ctx   [][2]string `refmt:"ctx,omitempty"`
+		Time   time.Time   `refmt:"t"`
+		Level  LogLevel    `refmt:"lvl"`
+		Msg    string      `refmt:"msg"`
+		Detail [][2]string `refmt:"detail,omitempty"`
 	}
 
 	// Output from the contained process (stdout/stderr conjoined).
@@ -95,3 +96,27 @@ const (
 	ErrInoperablePath       = ErrorCategory("rio-inoperable-path")       // The corresponding rio error halted execution.  (This one shouldn't show up much...!  Things like "out of disk" or such could still cause this though.)
 	ErrRPCBreakdown         = ErrorCategory("repeatr-rpc-breakdown")     // Raised when running a remote process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )
+
+type LogLevel int8
+
+const (
+	LogError LogLevel = 4 // Error log lines, if used, mean the program is on its way to exiting non-zero.  If used more than once, all but the first are other serious failures to clean up gracefully.
+	LogWarn  LogLevel = 3 // Warning logs are for systems which have failed, but in acceptable ways; for example, a warehouse that's not online (but a fallback is, so overall we proceeded happily).
+	LogInfo  LogLevel = 2 // Info logs are statements about control flow, for exmaple, which warehouses have been tried in what order.
+	LogDebug LogLevel = 1 // Debug logs are off by default.  They may get down to the resolution of called per-file in a transmat, for example.
+)
+
+func (ll LogLevel) String() string {
+	switch ll {
+	case LogError:
+		return "error"
+	case LogWarn:
+		return "warn"
+	case LogInfo:
+		return "info"
+	case LogDebug:
+		return "debug"
+	default:
+		return "invalid"
+	}
+}
