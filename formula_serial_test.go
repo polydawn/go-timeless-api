@@ -45,6 +45,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 							"/bin/hello",
 							"world"
 						],
+						"policy": "",
 						"cwd": "",
 						"env": null,
 						"userinfo": null,

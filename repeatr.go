@@ -77,6 +77,9 @@ type (
 		// one of 'Exec', 'Script', or 'Reshuffle' may be set.
 		Exec []string
 
+		// How much power to give the process.  Default is quite low.
+		Policy Policy `refmt:",omitempty"`
+
 		// The working directory to set when invoking the executable.
 		// If not set, will be defaulted to "/task".
 		Cwd AbsPath `refmt:",omitempty"`
