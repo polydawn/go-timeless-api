@@ -139,6 +139,12 @@ func ProcessFilters(ff api.FilesetFilters, mode FilterPurpose) (uf FilesetFilter
 		return uf, fmt.Errorf("sticky mode either 'keep' or 'zero'")
 	}
 
+	// Set SkipChown if Uid and Gid are both "mine" mode (so code filesystem
+	//  operations can take a hint to skip high-priv ops entirely).
+	if uf.Uid == FilterMine && uf.Gid == FilterMine {
+		uf.SkipChown = true
+	}
+
 	return
 }
 
@@ -151,8 +157,9 @@ func ProcessFilters(ff api.FilesetFilters, mode FilterPurpose) (uf FilesetFilter
 	code is free to presume fields only exist within their valid ranges when using this type.
 */
 type FilesetFilters struct {
-	Uid    int        // -1 for "keep", -2 for "mine"
-	Gid    int        // -1 for "keep", -2 for "mine"
-	Mtime  *time.Time // nil for "keep"
-	Sticky bool
+	Uid       int        // -1 for "keep", -2 for "mine"
+	Gid       int        // -1 for "keep", -2 for "mine"
+	Mtime     *time.Time // nil for "keep"
+	Sticky    bool
+	SkipChown bool // true if Uid and Gid are both -2
 }
