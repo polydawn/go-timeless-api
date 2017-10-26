@@ -163,3 +163,28 @@ type FilesetFilters struct {
 	Sticky    bool
 	SkipChown bool // true if Uid and Gid are both -2
 }
+
+/*
+	Predicate to check whether a filter will cause hash-alterating properties
+	changes (i.e., it's true if anything isn't "keep" mode).
+
+	Filters for which this property is false generally let implementations
+	skip a lot of costly work in both cache management and pre-vs-post tree
+	hash computation (if distinct, both are needed; one for verification, one
+	for output identity).
+*/
+func (filt FilesetFilters) IsHashAltering() bool {
+	if filt.Uid != FilterKeep {
+		return true
+	}
+	if filt.Gid != FilterKeep {
+		return true
+	}
+	if filt.Mtime != nil {
+		return true
+	}
+	if !filt.Sticky {
+		return true
+	}
+	return false
+}
