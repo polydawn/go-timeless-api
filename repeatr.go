@@ -141,6 +141,9 @@ func (f *Formula) Clone() (f2 Formula) {
 */
 func (f1 Formula) Apply(f2 Formula) (f3 Formula) {
 	f3 = f1.Clone()
+	if f3.Inputs == nil {
+		f3.Inputs = make(map[AbsPath]WareID)
+	}
 	for k, v := range f2.Inputs {
 		f3.Inputs[k] = v
 	}
@@ -153,6 +156,9 @@ func (f1 Formula) Apply(f2 Formula) (f3 Formula) {
 		}
 		if f2.Action.Cwd != "" {
 			f3.Action.Cwd = f2.Action.Cwd
+		}
+		if f3.Action.Env == nil {
+			f3.Action.Env = make(map[string]string)
 		}
 		for k, v := range f2.Action.Env {
 			f3.Action.Env[k] = v
@@ -182,6 +188,9 @@ func (f1 Formula) Apply(f2 Formula) (f3 Formula) {
 		if f2.Action.Hostname != "" {
 			f3.Action.Hostname = f2.Action.Hostname
 		}
+	}
+	if f3.Outputs == nil {
+		f3.Outputs = make(map[AbsPath]OutputSpec)
 	}
 	for k, v := range f2.Outputs {
 		f3.Outputs[k] = v
