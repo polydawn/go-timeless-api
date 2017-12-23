@@ -126,6 +126,69 @@ func (f *Formula) Clone() (f2 Formula) {
 	return
 }
 
+/*
+	Apply another formula as a patch to this one, returning a new formula
+	with the combined content.
+
+	Fields that are primitives will take the value from f2 if set.
+	Fields that are maps -- such as inputs, outputs, and action.env -- are
+	joined, and any duplicate keys in f2 will override the values from f1.
+	Fields that are arrays will either be merged by appending values from f2,
+	or, in some cases, may be treated as if they are primitives (action.exec
+	is treated as a primitive, for example, and if set at all in f2, will
+	override any values from f1 completely).
+
+*/
+func (f1 Formula) Apply(f2 Formula) (f3 Formula) {
+	f3 = f1.Clone()
+	for k, v := range f2.Inputs {
+		f3.Inputs[k] = v
+	}
+	{
+		if f2.Action.Exec != nil {
+			f3.Action.Exec = f2.Action.Exec
+		}
+		if f2.Action.Policy != "" {
+			f3.Action.Policy = f2.Action.Policy
+		}
+		if f2.Action.Cwd != "" {
+			f3.Action.Cwd = f2.Action.Cwd
+		}
+		for k, v := range f2.Action.Env {
+			f3.Action.Env[k] = v
+		}
+		if f2.Action.Userinfo != nil {
+			if f3.Action.Userinfo == nil {
+				f3.Action.Userinfo = &FormulaUserinfo{}
+			}
+			if f2.Action.Userinfo.Uid != nil {
+				i := *f2.Action.Userinfo.Uid
+				f3.Action.Userinfo.Uid = &i
+			}
+			if f2.Action.Userinfo.Gid != nil {
+				i := *f2.Action.Userinfo.Gid
+				f3.Action.Userinfo.Gid = &i
+			}
+			if f2.Action.Userinfo.Username != "" {
+				f3.Action.Userinfo.Username = f2.Action.Userinfo.Username
+			}
+			if f2.Action.Userinfo.Homedir != "" {
+				f3.Action.Userinfo.Homedir = f2.Action.Userinfo.Homedir
+			}
+		}
+		if f2.Action.Cradle != "" {
+			f3.Action.Cradle = f2.Action.Cradle
+		}
+		if f2.Action.Hostname != "" {
+			f3.Action.Hostname = f2.Action.Hostname
+		}
+	}
+	for k, v := range f2.Outputs {
+		f3.Outputs[k] = v
+	}
+	return
+}
+
 type RunRecord struct {
 	Guid      string             // random number, presumed globally unique.
 	Time      int64              // time at start of build.
