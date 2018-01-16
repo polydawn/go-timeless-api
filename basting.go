@@ -5,7 +5,8 @@ import (
 )
 
 type Basting struct {
-	Steps map[string]BastingStep
+	Steps    map[string]BastingStep
+	Contexts map[string]FormulaContext `refmt:",omitempty"`
 }
 
 type BastingStep struct {
@@ -22,7 +23,10 @@ type BastingStep struct {
 	// can be resolved at any time by referring to a hitch database).
 	Formula Formula
 
-	// no FormulaContext -- that's joined only right before 'repeatr run'
+	// no FormulaContext -- that's joined only right before 'repeatr run'.
+	// You can find them in the Basting with matching step names -- but only in some states:
+	//  - Basting that's about to be executed should have the context URLs provided.
+	//  - Basting that's stored by e.g. hitch releases should not.
 }
 
 var (
