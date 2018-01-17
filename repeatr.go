@@ -145,6 +145,46 @@ var (
 	OutputSpec_AtlasEntry      = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
 
+/*
+	Much as per the Formula.Apply function, but also combines the Imports
+	and the Context if present.
+*/
+func (f1 FormulaUnion) Apply(f2 FormulaUnion) (f3 FormulaUnion) {
+	refmt.MustCloneAtlased(f1.Imports, &f3.Imports, RepeatrAtlas)
+	if f2.Imports != nil {
+		if f3.Imports == nil {
+			f3.Imports = make(map[AbsPath]ReleaseItemID)
+		}
+		for p, id := range f2.Imports {
+			f3.Imports[p] = id
+		}
+	}
+
+	f3.Formula = f1.Formula.Apply(f2.Formula)
+
+	refmt.MustCloneAtlased(f1.Context, &f3.Context, RepeatrAtlas)
+	if f2.Context != nil {
+		if f3.Context == nil {
+			f3.Context = &FormulaContext{}
+		}
+		if f2.Context.FetchUrls != nil {
+			if f3.Context.FetchUrls == nil {
+				f3.Context.FetchUrls = make(map[AbsPath][]WarehouseAddr)
+			}
+			for p, addrs := range f2.Context.FetchUrls {
+				f3.Context.FetchUrls[p] = append(f3.Context.FetchUrls[p], addrs...)
+			}
+		}
+		if f2.Context.SaveUrls != nil {
+			if f3.Context.SaveUrls == nil {
+				f3.Context.SaveUrls = make(map[AbsPath]WarehouseAddr)
+			}
+			f3.Context.SaveUrls = f3.Context.SaveUrls
+		}
+	}
+	return
+}
+
 func (f *Formula) Clone() (f2 Formula) {
 	refmt.MustCloneAtlased(f, &f2, RepeatrAtlas)
 	return
