@@ -64,10 +64,14 @@ func ParseReleaseItemID(x string) (v ReleaseItemID, err error) {
 	}
 }
 
+func (x ReleaseItemID) String() string {
+	return string(x.CatalogName) + ":" + string(x.ReleaseName) + ":" + string(x.ItemName)
+}
+
 var ReleaseItemID_AtlasEntry = atlas.BuildEntry(ReleaseItemID{}).Transform().
 	TransformMarshal(atlas.MakeMarshalTransformFunc(
 		func(x ReleaseItemID) (string, error) {
-			return string(x.CatalogName) + ":" + string(x.ReleaseName) + ":" + string(x.ItemName), nil
+			return x.String(), nil
 		})).
 	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(
 		func(x string) (ReleaseItemID, error) {

@@ -12,6 +12,7 @@ var rioAtlasEntries = []*atlas.AtlasEntry{
 var repeatrAtlasEntries = []*atlas.AtlasEntry{
 	FormulaUnion_AtlasEntry,
 	Formula_AtlasEntry,
+	ReleaseItemID_AtlasEntry,
 	FormulaContext_AtlasEntry,
 	FormulaAction_AtlasEntry,
 	FormulaUserinfo_AtlasEntry,
@@ -28,10 +29,11 @@ var formulaCasAtlasEntries = []*atlas.AtlasEntry{
 
 var hitchAtlasEntries = []*atlas.AtlasEntry{
 	Catalog_AtlasEntry,
-	ReleaseItemID_AtlasEntry,
 	ReleaseEntry_AtlasEntry,
-	Replay_AtlasEntry,
-	Step_AtlasEntry,
+	Replay_AtlasEntry, // probably delete now
+	Step_AtlasEntry,   // probably delete now
+	Basting_AtlasEntry,
+	BastingStep_AtlasEntry,
 }
 
 var RepeatrAtlas = atlas.MustBuild(

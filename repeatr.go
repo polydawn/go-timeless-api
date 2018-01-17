@@ -17,8 +17,32 @@ type (
 		FormulaUnion is a serialization helper struct which composes several
 		structures that are typically saved in the same file for convenience.
 		FormulaUnion is not used in any function APIs -- component fields are.
+
+		  - The Formula itself is always used.
+		  - The Formula must have all input hashes resolved if it's about
+		    to be evaluated by `repeatr run`.
+		  - The Imports field should be nil if we're about to `repeatr run`,
+		    because Repeatr itself does not know or care about higher level graphs,
+		    but we won't explicitly reject it either.  (If there are import
+		    paths without a corresponding input hash, though, that's something
+		    gone wrong somewhere and we'll halt and warn.)
+		  - The Context fields should be set if we're about to `repeatr run`.
+
+		Note that the Basting structure contains all of these same pieces of
+		info, but composed differently: this is because at every level of
+		composition, we want the "context" (URLs and such) to remain separate
+		from the hashable, sharable, deterministic, timeless parts.
+
+		Some code uses this same union in marshalling partial info during
+		generation of Basting.  In that case:
+
+		  - If being used in Basting, the Imports fields may be assigned,
+		    and some input hashes may be blank if they're "wire" imports.
+		  - The Context fields may also be used temporarily (but as already
+		    mentioned, this will be destructured when composed into the Basting).
 	*/
 	FormulaUnion struct {
+		Imports map[AbsPath]ReleaseItemID `refmt:",omitempty"`
 		Formula Formula
 		Context *FormulaContext `refmt:",omitempty"`
 	}
@@ -120,6 +144,46 @@ var (
 	FormulaUserinfo_AtlasEntry = atlas.BuildEntry(FormulaUserinfo{}).StructMap().Autogenerate().Complete()
 	OutputSpec_AtlasEntry      = atlas.BuildEntry(OutputSpec{}).StructMap().Autogenerate().Complete()
 )
+
+/*
+	Much as per the Formula.Apply function, but also combines the Imports
+	and the Context if present.
+*/
+func (f1 FormulaUnion) Apply(f2 FormulaUnion) (f3 FormulaUnion) {
+	refmt.MustCloneAtlased(f1.Imports, &f3.Imports, RepeatrAtlas)
+	if f2.Imports != nil {
+		if f3.Imports == nil {
+			f3.Imports = make(map[AbsPath]ReleaseItemID)
+		}
+		for p, id := range f2.Imports {
+			f3.Imports[p] = id
+		}
+	}
+
+	f3.Formula = f1.Formula.Apply(f2.Formula)
+
+	refmt.MustCloneAtlased(f1.Context, &f3.Context, RepeatrAtlas)
+	if f2.Context != nil {
+		if f3.Context == nil {
+			f3.Context = &FormulaContext{}
+		}
+		if f2.Context.FetchUrls != nil {
+			if f3.Context.FetchUrls == nil {
+				f3.Context.FetchUrls = make(map[AbsPath][]WarehouseAddr)
+			}
+			for p, addrs := range f2.Context.FetchUrls {
+				f3.Context.FetchUrls[p] = append(f3.Context.FetchUrls[p], addrs...)
+			}
+		}
+		if f2.Context.SaveUrls != nil {
+			if f3.Context.SaveUrls == nil {
+				f3.Context.SaveUrls = make(map[AbsPath]WarehouseAddr)
+			}
+			f3.Context.SaveUrls = f3.Context.SaveUrls
+		}
+	}
+	return
+}
 
 func (f *Formula) Clone() (f2 Formula) {
 	refmt.MustCloneAtlased(f, &f2, RepeatrAtlas)
