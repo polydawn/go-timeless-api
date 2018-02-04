@@ -5,7 +5,17 @@ import (
 )
 
 type Basting struct {
-	Steps    map[string]BastingStep
+	// Each step in the basting is a formula plus its imports; the imports
+	// either name how the formulas inputs were selected (these names point
+	// to catalogs) or point to other formulas in the basting (these are called
+	// "wire" imports.
+	//
+	// By the time the basting is ready to be evaluated, each formula should
+	// have the identity of all inputs pinned, in addition to the import info,
+	// except for "wire" imports which obviously can't be evaluated until run.
+	// Import info will be ignored during evaluation, but is kept for audit.
+	Steps map[string]BastingStep
+
 	Contexts map[string]FormulaContext `refmt:",omitempty"`
 }
 
