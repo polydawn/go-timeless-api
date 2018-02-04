@@ -16,6 +16,10 @@ type Basting struct {
 	// Import info will be ignored during evaluation, but is kept for audit.
 	Steps map[string]BastingStep
 
+	// Export wires and the item name to export them as.
+	// (ReleaseItemID is being abused here; *only* "wire" mode is allowed.)
+	Exports map[ItemName]ReleaseItemID
+
 	Contexts map[string]FormulaContext `refmt:",omitempty"`
 }
 
