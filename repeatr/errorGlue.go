@@ -28,10 +28,10 @@ func (e *Error) Error() string              { return e.Message_ }
 	Helper to set the Error field of the result message structure,
 	handling type conversion checks.
 */
-func (r *Event_Result) SetError(err error) {
+func (r Event_Result) SetError(err error) Event_Result {
 	if err == nil {
 		r.Error = nil
-		return
+		return r
 	}
 	r.Error = &Error{}
 	if e2, ok := err.(errcat.Error); ok {
@@ -47,4 +47,5 @@ func (r *Event_Result) SetError(err error) {
 		r.Error.Category_ = ErrRPCBreakdown
 		r.Error.Message_ = err.Error()
 	}
+	return r
 }
