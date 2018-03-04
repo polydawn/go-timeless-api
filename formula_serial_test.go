@@ -10,6 +10,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 	t.Run("basic formula and context", func(t *testing.T) {
 		ShouldMarshalPrettyJson(t,
 			FormulaUnion{
+				nil,
 				Formula{
 					Inputs: map[AbsPath]WareID{
 						"/": WareID{"demo", "asdf"},
@@ -36,6 +37,7 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 			RepeatrAtlas,
 			`
 			{
+				"imports": null,
 				"formula": {
 					"inputs": {
 						"/": "demo:asdf"
