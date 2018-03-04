@@ -37,7 +37,6 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 			RepeatrAtlas,
 			`
 			{
-				"imports": null,
 				"formula": {
 					"inputs": {
 						"/": "demo:asdf"
@@ -46,23 +45,12 @@ func TestFormulaSerializationFixtures(t *testing.T) {
 						"exec": [
 							"/bin/hello",
 							"world"
-						],
-						"policy": "",
-						"cwd": "",
-						"env": null,
-						"userinfo": null,
-						"cradle": "",
-						"hostname": ""
+						]
 					},
 					"outputs": {
 						"/saveme": {
 							"packtype": "tar",
-							"filters": {
-								"uid": "",
-								"gid": "",
-								"mtime": "",
-								"sticky": ""
-							}
+							"filters": {}
 						}
 					}
 				},
@@ -92,12 +80,7 @@ func TestFormulaUserinfoSerialization(t *testing.T) {
 			FormulaUserinfo{},
 			RepeatrAtlas,
 			`
-			{
-				"uid": null,
-				"gid": null,
-				"username": "",
-				"homedir": ""
-			}`,
+			{}`,
 		)
 	})
 	t.Run("an empty object should deserialize as the zero userinfo", func(t *testing.T) {
@@ -122,10 +105,7 @@ func TestFormulaUserinfoSerialization(t *testing.T) {
 			RepeatrAtlas,
 			`
 			{
-				"uid": 0,
-				"gid": null,
-				"username": "",
-				"homedir": ""
+				"uid": 0
 			}`,
 		)
 	})
