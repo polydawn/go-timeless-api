@@ -266,13 +266,13 @@ type RunRecord struct {
 	Guid      string             // random number, presumed globally unique.
 	Time      int64              // time at start of build.
 	FormulaID SetupHash          // HID of formula ran.
-	Results   map[AbsPath]WareID // wares produced by the run!
 	ExitCode  int                // exit code of the contained process.
+	Results   map[AbsPath]WareID // wares produced by the run!
 
 	// --- below: addntl optional metadata ---
 
-	Hostname string            // hostname.  not a trusted field, but useful for debugging.
-	Metadata map[string]string // escape valve.  you can attach freetext here.
+	Hostname string            `refmt:",omitempty"` // hostname.  not a trusted field, but useful for debugging.
+	Metadata map[string]string `refmt:",omitempty"` // escape valve.  you can attach freetext here.
 }
 
 var RunRecord_AtlasEntry = atlas.BuildEntry(RunRecord{}).StructMap().Autogenerate().Complete()
