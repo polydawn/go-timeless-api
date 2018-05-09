@@ -65,7 +65,16 @@ func ParseReleaseItemID(x string) (v ReleaseItemID, err error) {
 }
 
 func (x ReleaseItemID) String() string {
-	return string(x.CatalogName) + ":" + string(x.ReleaseName) + ":" + string(x.ItemName)
+	switch {
+	case x.CatalogName == "":
+		return ""
+	case x.ReleaseName == "":
+		return string(x.CatalogName)
+	case x.ItemName == "":
+		return string(x.CatalogName) + ":" + string(x.ReleaseName)
+	default:
+		return string(x.CatalogName) + ":" + string(x.ReleaseName) + ":" + string(x.ItemName)
+	}
 }
 
 var ReleaseItemID_AtlasEntry = atlas.BuildEntry(ReleaseItemID{}).Transform().
