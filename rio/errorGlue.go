@@ -3,7 +3,7 @@ package rio
 import (
 	"fmt"
 
-	"github.com/polydawn/go-errcat"
+	"github.com/warpfork/go-errcat"
 )
 
 /*

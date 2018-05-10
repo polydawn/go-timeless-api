@@ -1,7 +1,7 @@
 package rio
 
 import (
-	"github.com/polydawn/go-errcat"
+	"github.com/warpfork/go-errcat"
 )
 
 var ErrorTable = []struct {
