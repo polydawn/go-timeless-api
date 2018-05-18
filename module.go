@@ -7,6 +7,10 @@ type SlotReference struct {
 	SlotName
 }
 type SubmoduleReference string // .-sep.  really is a []StepName, but we wanted something easily used as a map key.
+type SubmoduleStepReference struct {
+	SubmoduleReference
+	StepName
+}
 type SubmoduleSlotReference struct {
 	SubmoduleReference
 	SlotReference
@@ -31,6 +35,19 @@ type StepUnion interface {
 
 func (Module) _Step()    {}
 func (Operation) _Step() {}
+
+func submodularizeReference(parent StepName, ref SubmoduleReference) SubmoduleReference {
+	if ref == "" {
+		return SubmoduleReference(parent)
+	}
+	return SubmoduleReference(string(parent) + "." + string(ref))
+}
+func submodularizeStepReference(parent StepName, ref SubmoduleStepReference) SubmoduleStepReference {
+	return SubmoduleStepReference{
+		submodularizeReference(parent, ref.SubmoduleReference),
+		ref.StepName,
+	}
+}
 
 func validateConnectivity(m Module) ([]StepName, []error) {
 	// Suppose all imports are unused; we'll strike things off as they're used.

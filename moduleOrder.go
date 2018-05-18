@@ -6,6 +6,32 @@ import (
 )
 
 /*
+	OrderStepsDeep is like OrderSteps, but returns *all* steps, recursively
+	including all submodules and their steps.
+*/
+func OrderStepsDeep(m Module) (r []SubmoduleStepReference, _ error) {
+	levelOrder, err := OrderSteps(m)
+	if err != nil {
+		return nil, err
+	}
+	for _, stepName := range levelOrder {
+		switch x := m.Operations[stepName].(type) {
+		case Operation:
+			r = append(r, SubmoduleStepReference{"", stepName})
+		case Module:
+			subOrder, err := OrderStepsDeep(x)
+			if err != nil {
+				return nil, err
+			}
+			for _, subStep := range subOrder {
+				r = append(r, submodularizeStepReference(stepName, subStep))
+			}
+		}
+	}
+	return r, nil
+}
+
+/*
 	OrderSteps returns a slice of StepName from a Module's Operations
 	in order of topological sort based on SlotName each op references as inputs.
 
@@ -127,7 +153,7 @@ func inputSlotReferences(s StepUnion) (r []SlotReference) {
 		for _, impPattern := range x.Imports {
 			switch impPattern[0] {
 			case "parent":
-				if slotRef, err := ParseSlotReference(impPattern[1]); err != nil {
+				if slotRef, err := ParseSlotReference(impPattern[1]); err == nil {
 					r = append(r, slotRef)
 				} else {
 					panic(err) // TODO check these things earlier, makes easier

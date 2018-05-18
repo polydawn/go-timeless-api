@@ -201,3 +201,55 @@ func TestComplexOrdering(t *testing.T) {
 		"stepK", "stepL", "stepM",
 	})
 }
+
+func TestDeepSubmoduleOrdering(t *testing.T) {
+	basting := Module{Operations: map[StepName]StepUnion{
+		"stepFoo": Operation{
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepBar": Operation{
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepSub": Module{
+			Imports: map[SlotName]ImportPattern{
+				"subx": {"parent", "stepFoo.slot"},
+			},
+			Operations: map[StepName]StepUnion{
+				"deeper": Module{
+					Imports: map[SlotName]ImportPattern{
+						"suby": {"parent", "subx"},
+					},
+					Operations: map[StepName]StepUnion{
+						"rlydeep": Operation{
+							Outputs: map[SlotName]AbsPath{"slot": "/"},
+						},
+					},
+					Exports: map[ItemName]SlotReference{
+						"zowslot": {"midstep", "slot"},
+					},
+				},
+				"midstep": Operation{
+					Inputs:  map[SlotReference]AbsPath{{"deeper", "zowslot"}: "/"},
+					Outputs: map[SlotName]AbsPath{"slot": "/"},
+				},
+			},
+			Exports: map[ItemName]SlotReference{
+				"wowslot": {"midstep", "slot"},
+			},
+		},
+		"stepWub": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepSub", "wowslot"}: "/",
+			},
+		},
+	}}
+	order, err := OrderStepsDeep(basting)
+	Wish(t, err, ShouldEqual, nil)
+	Wish(t, order, ShouldEqual, []SubmoduleStepReference{
+		SubmoduleStepReference{"", "stepBar"},
+		SubmoduleStepReference{"", "stepFoo"},
+		SubmoduleStepReference{"stepSub.deeper", "rlydeep"},
+		SubmoduleStepReference{"stepSub", "midstep"},
+		SubmoduleStepReference{"", "stepWub"},
+	})
+}
