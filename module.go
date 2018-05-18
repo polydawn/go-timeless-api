@@ -9,7 +9,7 @@ type SlotReference struct {
 type SubmoduleReference string // .-sep.  really is a []StepName, but we wanted something easily used as a map key.
 type SubmoduleSlotReference struct {
 	SubmoduleReference
-	SlotName
+	SlotReference
 }
 
 type ImportPattern []string   // :-sep.  Major types catalog|ingest|ware|parent
@@ -21,7 +21,6 @@ type Module struct {
 	Imports         map[SlotName]ImportPattern
 	ImportsResolved map[SubmoduleSlotReference]ImportReference // only allowed on top module (since it contains info for all submodules as well).
 	ImportsPinned   map[SubmoduleSlotReference]WareID          // only allowed on top module (since it contains info for all submodules as well).
-	Operation       *StepUnion
 	Operations      map[StepName]StepUnion
 	Exports         map[ItemName]SlotReference
 }
@@ -32,3 +31,17 @@ type StepUnion interface {
 
 func (Module) _Step()    {}
 func (Operation) _Step() {}
+
+func validateConnectivity(m Module) ([]StepName, []error) {
+	// Suppose all imports are unused; we'll strike things off as they're used.
+	unusedImports := make(map[SlotName]struct{}, len(m.Imports))
+	for imp := range m.Imports {
+		unusedImports[imp] = struct{}{}
+	}
+
+	return nil, nil
+}
+
+func validateParentImports(parent Module, submodule Module) []error {
+	return nil
+}
