@@ -51,3 +51,153 @@ func TestFanoutLexicalOrdering(t *testing.T) {
 		"stepD",
 	})
 }
+
+func TestFanInLexicalOrdering(t *testing.T) {
+	basting := Module{Operations: map[StepName]StepUnion{
+		"stepD": Operation{Outputs: map[SlotName]AbsPath{"theslot": "/"}},
+		"stepB": Operation{Outputs: map[SlotName]AbsPath{"theslot": "/"}},
+		"stepA": Operation{Outputs: map[SlotName]AbsPath{"theslot": "/"}},
+		"stepC": Operation{Outputs: map[SlotName]AbsPath{"theslot": "/"}},
+		"step9": Operation{Inputs: map[SlotReference]AbsPath{
+			{"stepA", "theslot"}: "/a",
+			{"stepB", "theslot"}: "/b",
+			{"stepC", "theslot"}: "/c",
+			{"stepD", "theslot"}: "/d",
+		}},
+	}}
+	order, err := OrderSteps(basting)
+	Wish(t, err, ShouldEqual, nil)
+	Wish(t, order, ShouldEqual, []StepName{
+		"stepA",
+		"stepB",
+		"stepC",
+		"stepD",
+		"step9",
+	})
+}
+
+func TestSimpleLinearOrdering(t *testing.T) {
+	basting := Module{Operations: map[StepName]StepUnion{
+		"stepA": Operation{
+			Outputs: map[SlotName]AbsPath{"aslot": "/"},
+		},
+		"stepB": Operation{
+			Inputs:  map[SlotReference]AbsPath{{"stepA", "aslot"}: "/"},
+			Outputs: map[SlotName]AbsPath{"xslot": "/"},
+		},
+		"stepD": Operation{
+			Inputs:  map[SlotReference]AbsPath{{"stepB", "xslot"}: "/"},
+			Outputs: map[SlotName]AbsPath{"xslot": "/"},
+		},
+		"stepC": Operation{
+			Inputs: map[SlotReference]AbsPath{{"stepD", "xslot"}: "/"},
+		},
+	}}
+	order, err := OrderSteps(basting)
+	Wish(t, err, ShouldEqual, nil)
+	Wish(t, order, ShouldEqual, []StepName{
+		"stepA",
+		"stepB",
+		"stepD",
+		"stepC",
+	})
+}
+
+func TestComplexOrdering(t *testing.T) {
+	/*
+	               /------------> K --\
+	               |                   \
+	  A --> B -----E ------> H --------> L
+	              /                     /
+	    C --> D -----F --> G ----------/
+	                 |
+	                 \------> I----------> M
+	                 |                    /
+	                 \--------> J -------/
+	*/
+	basting := Module{Operations: map[StepName]StepUnion{
+		"stepA": Operation{
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepB": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepA", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepC": Operation{
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepD": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepC", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepE": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepB", "slot"}: "/",
+				{"stepD", "slot"}: "/1",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepF": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepD", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepG": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepF", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepH": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepE", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepI": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepF", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepJ": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepF", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepK": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepE", "slot"}: "/",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepL": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepG", "slot"}: "/",
+				{"stepK", "slot"}: "/1",
+				{"stepH", "slot"}: "/2",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+		"stepM": Operation{
+			Inputs: map[SlotReference]AbsPath{
+				{"stepI", "slot"}: "/",
+				{"stepJ", "slot"}: "/1",
+			},
+			Outputs: map[SlotName]AbsPath{"slot": "/"},
+		},
+	}}
+	order, err := OrderSteps(basting)
+	Wish(t, err, ShouldEqual, nil)
+	Wish(t, order, ShouldEqual, []StepName{
+		"stepA", "stepB", "stepC", "stepD", "stepE",
+		"stepF", "stepG", "stepH", "stepI", "stepJ",
+		"stepK", "stepL", "stepM",
+	})
+}

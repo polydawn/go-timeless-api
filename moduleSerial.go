@@ -19,3 +19,13 @@ func ParseSlotReference(x string) (SlotReference, error) {
 		return SlotReference{}, fmt.Errorf("slot references can be of form 'x' or 'x.y'.")
 	}
 }
+
+func (x SlotReference) String() string {
+	if x.StepName == "" && x.SlotName == "" {
+		return ""
+	} else if x.SlotName == "" {
+		return string(x.SlotName)
+	} else {
+		return string(x.StepName) + "." + string(x.SlotName)
+	}
+}

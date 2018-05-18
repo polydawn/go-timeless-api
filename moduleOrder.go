@@ -75,16 +75,17 @@ func orderSteps_visit(
 	// Check that those actually point somewhere.
 	for _, wire := range wires {
 		// TODO: all of these name existence checks should be done linearly up front (... also).
+		// FIXME: these error strings are not great for submodules; they forgot the "parent:" part.
 		switch wire.StepName == "" {
 		case true:
 			if _, ok := m.Imports[wire.SlotName]; !ok {
-				return fmt.Errorf("%s.%s is an invalid reference: %s is not an import of this module", node, wire, wire.SlotName)
+				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of an import in this module", node, wire, wire.SlotName)
 			}
 		case false:
 			if op, ok := m.Operations[wire.StepName]; !ok {
-				return fmt.Errorf("%s.%s is an invalid reference: %s is not the name of a step in this module", node, wire, wire.SlotName)
+				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of a step in this module", node, wire, wire.SlotName)
 			} else if _, ok := outputSlotReferences(op)[wire.SlotName]; !ok {
-				return fmt.Errorf("%s.%s is an invalid reference: step %s has no output named %s", node, wire, wire.StepName, wire.SlotName)
+				return fmt.Errorf("step %q has an invalid reference to %q: step %q has no output named %s", node, wire, wire.StepName, wire.SlotName)
 			}
 		}
 	}
