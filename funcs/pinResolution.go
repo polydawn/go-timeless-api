@@ -1,6 +1,8 @@
 package funcs
 
 import (
+	"context"
+
 	"go.polydawn.net/go-timeless-api"
 	"go.polydawn.net/go-timeless-api/hitch"
 )
@@ -10,9 +12,23 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 
 	// resolve each of our imports in this module
 	for slotName, impRef := range m.Imports {
-		// TODO this'll depend on the type of import; let's make that type better defined first.
-		// TODO and we also might need an 'ingestTool' of some kind, at least for the topmost module.
 		_, _ = slotName, impRef
+		switch impRef2 := impRef.(type) {
+		case api.ImportRef_Catalog:
+			mcat, err := catalogTool(context.TODO(), impRef2.ModuleName)
+			if err != nil {
+				return nil, err
+			}
+			wareID, err := PluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
+			if err != nil {
+				return nil, err
+			}
+			r[api.SubmoduleSlotReference{"", api.SlotReference{"", slotName}}] = *wareID
+		case api.ImportRef_Parent:
+			// pass.  we don't resolve these in advance; and it's checked by the 'OrderSteps' func that this refers to *something*.
+		case api.ImportRef_Ingest:
+			// TODO we need an 'ingestTool' of some kind, at least for the topmost module.
+		}
 	}
 
 	// recurse, and fold all those references into our return set
