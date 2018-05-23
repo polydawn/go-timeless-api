@@ -19,14 +19,17 @@ type SubmoduleSlotReference struct {
 type ImportPattern []string   // :-sep.  Major types catalog|ingest|ware|parent
 type ImportReference []string // :-sep.  Major types catalog|ware
 
-type ItemName string // 3rd part of catalog index tuple
+type MainModule struct {
+	// REVIEW: we have some serious questions about this.  ingests are getting some special hall passes, and have some very specific user stories for why they do so.  other import selectors are not well defined.  nor are the appropriate times to *use* them (whereas ingests are "always").
+	//ImportsResolved map[SubmoduleSlotReference]ImportReference // only allowed on top module (since it contains info for all submodules as well).
 
+	ImportsPinned map[SubmoduleSlotReference]WareID // only allowed on top module (since it contains info for all submodules as well).
+	Module
+}
 type Module struct {
-	Imports         map[SlotName]ImportPattern
-	ImportsResolved map[SubmoduleSlotReference]ImportReference // only allowed on top module (since it contains info for all submodules as well).
-	ImportsPinned   map[SubmoduleSlotReference]WareID          // only allowed on top module (since it contains info for all submodules as well).
-	Operations      map[StepName]StepUnion
-	Exports         map[ItemName]SlotReference
+	Imports    map[SlotName]ImportPattern
+	Operations map[StepName]StepUnion
+	Exports    map[ItemName]SlotReference
 }
 
 type StepUnion interface {

@@ -12,3 +12,9 @@ func (ref SubmoduleStepReference) Contextualize(parent StepName) SubmoduleStepRe
 		ref.StepName,
 	}
 }
+func (ref SubmoduleSlotReference) Contextualize(parent StepName) SubmoduleSlotReference {
+	return SubmoduleSlotReference{
+		ref.SubmoduleReference.Contextualize(parent),
+		ref.SlotReference,
+	}
+}
