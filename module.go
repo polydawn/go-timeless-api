@@ -36,19 +36,6 @@ type StepUnion interface {
 func (Module) _Step()    {}
 func (Operation) _Step() {}
 
-func submodularizeReference(parent StepName, ref SubmoduleReference) SubmoduleReference {
-	if ref == "" {
-		return SubmoduleReference(parent)
-	}
-	return SubmoduleReference(string(parent) + "." + string(ref))
-}
-func submodularizeStepReference(parent StepName, ref SubmoduleStepReference) SubmoduleStepReference {
-	return SubmoduleStepReference{
-		submodularizeReference(parent, ref.SubmoduleReference),
-		ref.StepName,
-	}
-}
-
 func validateConnectivity(m Module) ([]StepName, []error) {
 	// Suppose all imports are unused; we'll strike things off as they're used.
 	unusedImports := make(map[SlotName]struct{}, len(m.Imports))

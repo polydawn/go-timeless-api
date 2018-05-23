@@ -24,7 +24,7 @@ func OrderStepsDeep(m Module) (r []SubmoduleStepReference, _ error) {
 				return nil, err
 			}
 			for _, subStep := range subOrder {
-				r = append(r, submodularizeStepReference(stepName, subStep))
+				r = append(r, subStep.Contextualize(stepName))
 			}
 		}
 	}
