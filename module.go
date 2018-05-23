@@ -45,7 +45,10 @@ type ImportRef interface {
 
 type ImportRef_Catalog ItemRef
 type ImportRef_Parent SlotReference
-type ImportRef_Ingest []string
+type ImportRef_Ingest struct {
+	IngestKind string
+	Args       string
+}
 
 func (ImportRef_Catalog) _ImportRef() {}
 func (ImportRef_Parent) _ImportRef()  {}
