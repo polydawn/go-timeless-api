@@ -150,14 +150,15 @@ func inputSlotReferences(s StepUnion) (r []SlotReference) {
 		}
 		return r
 	case Module:
-		for _, impPattern := range x.Imports {
-			switch impPattern[0] {
-			case "parent":
-				if slotRef, err := ParseSlotReference(impPattern[1]); err == nil {
-					r = append(r, slotRef)
-				} else {
-					panic(err) // TODO check these things earlier, makes easier
-				}
+		for _, imp := range x.Imports {
+			switch imp2 := imp.(type) {
+			case ImportRef_Catalog:
+				// pass
+			case ImportRef_Parent:
+				r = append(r, SlotReference(imp2))
+			case ImportRef_Ingest:
+				// this is panic-worthy because it should've been checked earlier.
+				panic("submodules can't have ingest imports!")
 			}
 		}
 		return r

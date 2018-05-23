@@ -211,13 +211,13 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 			Outputs: map[SlotName]AbsPath{"slot": "/"},
 		},
 		"stepSub": Module{
-			Imports: map[SlotName]ImportPattern{
-				"subx": {"parent", "stepFoo.slot"},
+			Imports: map[SlotName]ImportRef{
+				"subx": ImportRef_Parent{"stepFoo", "slot"},
 			},
 			Operations: map[StepName]StepUnion{
 				"deeper": Module{
-					Imports: map[SlotName]ImportPattern{
-						"suby": {"parent", "subx"},
+					Imports: map[SlotName]ImportRef{
+						"suby": ImportRef_Parent{"", "subx"},
 					},
 					Operations: map[StepName]StepUnion{
 						"rlydeep": Operation{
