@@ -4,6 +4,12 @@ type ModuleName string
 type ReleaseName string
 type ItemName string
 
+type ItemRef struct {
+	ModuleName
+	ReleaseName
+	ItemName
+}
+
 // n.b. if you're a developer following the name changes from earlier TLapi:
 //  we're pivoting to refer to "the catalog" as *all* the things from *all* the projects;
 //  so the all the releases for one project are now a "module catalog"
