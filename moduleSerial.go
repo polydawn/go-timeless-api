@@ -3,7 +3,14 @@ package api
 import (
 	"fmt"
 	"strings"
+
+	"github.com/polydawn/refmt/obj/atlas"
 )
+
+var SlotReference_AtlasEntry = atlas.BuildEntry(SlotReference{}).Transform().
+	TransformMarshal(atlas.MakeMarshalTransformFunc(func(x SlotReference) (string, error) { return x.String(), nil })).
+	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(ParseSlotReference)).
+	Complete()
 
 func ParseSlotReference(x string) (SlotReference, error) {
 	if x == "" {
@@ -23,7 +30,7 @@ func ParseSlotReference(x string) (SlotReference, error) {
 func (x SlotReference) String() string {
 	if x.StepName == "" && x.SlotName == "" {
 		return ""
-	} else if x.SlotName == "" {
+	} else if x.StepName == "" {
 		return string(x.SlotName)
 	} else {
 		return string(x.StepName) + "." + string(x.SlotName)

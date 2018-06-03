@@ -5,7 +5,7 @@ type AbsPath string
 type Operation struct {
 	Inputs  map[SlotReference]AbsPath
 	Action  OpAction
-	Outputs map[SlotName]AbsPath
+	Outputs map[SlotName]AbsPath `refmt:",omitempty"`
 }
 
 type ReadyOperation struct {
