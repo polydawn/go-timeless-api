@@ -32,6 +32,13 @@ func TestOperationSerialization(t *testing.T) {
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, targ, ShouldEqual, obj)
 		})
+		t.Run("unmarshal blank", func(t *testing.T) {
+			targ := Operation{}
+			canon := `{}`
+			err := refmt.UnmarshalAtlased(json.DecodeOptions{}, bytes.NewBufferString(canon).Bytes(), &targ, atl)
+			Wish(t, err, ShouldEqual, nil)
+			Wish(t, targ, ShouldEqual, obj)
+		})
 	})
 	t.Run("examplary operation should roundtrip", func(t *testing.T) {
 		obj := Operation{
