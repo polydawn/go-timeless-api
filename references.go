@@ -41,6 +41,7 @@ type SubmoduleSlotReference struct {
 // errors if the ingested data isn't also in the module exports.
 type ImportRef interface {
 	_ImportRef()
+	String() string
 }
 
 type ImportRef_Catalog ItemRef
@@ -53,3 +54,7 @@ type ImportRef_Ingest struct {
 func (ImportRef_Catalog) _ImportRef() {}
 func (ImportRef_Parent) _ImportRef()  {}
 func (ImportRef_Ingest) _ImportRef()  {}
+
+func (x ImportRef_Catalog) String() string { return "catalog:" + (ItemRef(x)).String() }
+func (x ImportRef_Parent) String() string  { return "parent:" + (SlotReference(x)).String() }
+func (x ImportRef_Ingest) String() string  { return "ingest:" + "TODO" } // TODO

@@ -6,7 +6,7 @@ type MainModule struct {
 }
 type Module struct {
 	Imports    map[SlotName]ImportRef
-	Operations map[StepName]StepUnion
+	Operations map[StepName]StepUnion     `refmt:"steps"`
 	Exports    map[ItemName]SlotReference `refmt:",omitempty"`
 }
 
