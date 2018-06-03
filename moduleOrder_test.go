@@ -225,7 +225,7 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 						},
 					},
 					Exports: map[ItemName]SlotReference{
-						"zowslot": {"midstep", "slot"},
+						"zowslot": {"rlydeep", "slot"},
 					},
 				},
 				"midstep": Operation{
@@ -253,3 +253,5 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 		SubmoduleStepReference{"", "stepWub"},
 	})
 }
+
+// TODO referential integrity checks: exports must actually refer to local outputs or imports
