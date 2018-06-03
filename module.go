@@ -70,17 +70,3 @@ type StepUnion interface {
 
 func (Module) _Step()    {}
 func (Operation) _Step() {}
-
-func validateConnectivity(m Module) ([]StepName, []error) {
-	// Suppose all imports are unused; we'll strike things off as they're used.
-	unusedImports := make(map[SlotName]struct{}, len(m.Imports))
-	for imp := range m.Imports {
-		unusedImports[imp] = struct{}{}
-	}
-
-	return nil, nil
-}
-
-func validateParentImports(parent Module, submodule Module) []error {
-	return nil
-}
