@@ -8,11 +8,11 @@ import (
 )
 
 /*
-	OrderStepsDeep is like OrderSteps, but returns *all* steps, recursively
+	ModuleOrderStepsDeep is like ModuleOrderSteps, but returns *all* steps, recursively
 	including all submodules and their steps.
 */
-func OrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
-	levelOrder, err := OrderSteps(m)
+func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
+	levelOrder, err := ModuleOrderSteps(m)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func OrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
 		case api.Operation:
 			r = append(r, api.SubmoduleStepReference{"", stepName})
 		case api.Module:
-			subOrder, err := OrderStepsDeep(x)
+			subOrder, err := ModuleOrderStepsDeep(x)
 			if err != nil {
 				return nil, err
 			}
@@ -34,7 +34,7 @@ func OrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
 }
 
 /*
-	OrderSteps returns a slice of StepName from a Module's Operations
+	ModuleOrderSteps returns a slice of StepName from a Module's Operations
 	in order of topological sort based on SlotName each op references as inputs.
 
 	We break ties based on lexigraphical sort on the step names.
@@ -44,7 +44,7 @@ func OrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
 	is more important than cleverness; so is the regional stability of the
 	sort in the face of changes in other parts of the graph.
 */
-func OrderSteps(m api.Module) ([]api.StepName, error) {
+func ModuleOrderSteps(m api.Module) ([]api.StepName, error) {
 	// Alloc result accumulator.
 	result := make([]api.StepName, 0, len(m.Operations))
 	// Initialize todo set; it shrinks as we go.

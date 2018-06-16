@@ -19,7 +19,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 			if err != nil {
 				return nil, err
 			}
-			wareID, err := PluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
+			wareID, err := CatalogPluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
 			if err != nil {
 				return nil, err
 			}

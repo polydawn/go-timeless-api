@@ -15,7 +15,7 @@ func TestNilRelationLexicalOrdering(t *testing.T) {
 		"stepA": api.Operation{},
 		"stepC": api.Operation{},
 	}}
-	order, err := OrderSteps(basting)
+	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.StepName{
 		"stepA",
@@ -43,7 +43,7 @@ func TestFanoutLexicalOrdering(t *testing.T) {
 			"theslot": "/",
 		}},
 	}}
-	order, err := OrderSteps(basting)
+	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.StepName{
 		"step0",
@@ -67,7 +67,7 @@ func TestFanInLexicalOrdering(t *testing.T) {
 			{"stepD", "theslot"}: "/d",
 		}},
 	}}
-	order, err := OrderSteps(basting)
+	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.StepName{
 		"stepA",
@@ -95,7 +95,7 @@ func TestSimpleLinearOrdering(t *testing.T) {
 			Inputs: map[api.SlotReference]api.AbsPath{{"stepD", "xslot"}: "/"},
 		},
 	}}
-	order, err := OrderSteps(basting)
+	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.StepName{
 		"stepA",
@@ -195,7 +195,7 @@ func TestComplexOrdering(t *testing.T) {
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 	}}
-	order, err := OrderSteps(basting)
+	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.StepName{
 		"stepA", "stepB", "stepC", "stepD", "stepE",
@@ -245,7 +245,7 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 			},
 		},
 	}}
-	order, err := OrderStepsDeep(basting)
+	order, err := ModuleOrderStepsDeep(basting)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, order, ShouldEqual, []api.SubmoduleStepReference{
 		{"", "stepBar"},
