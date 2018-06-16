@@ -1,24 +1,26 @@
-package api
+package funcs
 
 import (
 	"fmt"
 	"sort"
+
+	"go.polydawn.net/go-timeless-api"
 )
 
 /*
 	OrderStepsDeep is like OrderSteps, but returns *all* steps, recursively
 	including all submodules and their steps.
 */
-func OrderStepsDeep(m Module) (r []SubmoduleStepReference, _ error) {
+func OrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
 	levelOrder, err := OrderSteps(m)
 	if err != nil {
 		return nil, err
 	}
 	for _, stepName := range levelOrder {
 		switch x := m.Operations[stepName].(type) {
-		case Operation:
-			r = append(r, SubmoduleStepReference{"", stepName})
-		case Module:
+		case api.Operation:
+			r = append(r, api.SubmoduleStepReference{"", stepName})
+		case api.Module:
 			subOrder, err := OrderStepsDeep(x)
 			if err != nil {
 				return nil, err
@@ -42,11 +44,11 @@ func OrderStepsDeep(m Module) (r []SubmoduleStepReference, _ error) {
 	is more important than cleverness; so is the regional stability of the
 	sort in the face of changes in other parts of the graph.
 */
-func OrderSteps(m Module) ([]StepName, error) {
+func OrderSteps(m api.Module) ([]api.StepName, error) {
 	// Alloc result accumulator.
-	result := make([]StepName, 0, len(m.Operations))
+	result := make([]api.StepName, 0, len(m.Operations))
 	// Initialize todo set; it shrinks as we go.
-	todo := make(map[StepName]struct{}, len(m.Operations))
+	todo := make(map[api.StepName]struct{}, len(m.Operations))
 	for step := range m.Operations {
 		todo[step] = struct{}{}
 	}
@@ -58,14 +60,14 @@ func OrderSteps(m Module) ([]StepName, error) {
 	sort.Sort(stepsOrdered)
 	// For each step: visit.  (This will recurse, and no-op itself internally as approrpriate for visited nodes.)
 	for _, step := range stepsOrdered {
-		if err := orderSteps_visit(step, todo, map[StepName]struct{}{}, &result, m); err != nil {
+		if err := orderSteps_visit(step, todo, map[api.StepName]struct{}{}, &result, m); err != nil {
 			return nil, err
 		}
 	}
 	return result, nil
 }
 
-type stepNames []StepName
+type stepNames []api.StepName
 
 func (s stepNames) Len() int           { return len(s) }
 func (s stepNames) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
@@ -81,11 +83,11 @@ func (s stepNames) Less(i, j int) bool { return s[i] < s[j] }
 //    coincidentally wouldn't happen to hit the invalid region.
 
 func orderSteps_visit(
-	node StepName,
-	todo map[StepName]struct{},
-	loopDetector map[StepName]struct{},
-	result *[]StepName,
-	m Module,
+	node api.StepName,
+	todo map[api.StepName]struct{},
+	loopDetector map[api.StepName]struct{},
+	result *[]api.StepName,
+	m api.Module,
 ) error {
 	// Quick exit if possible.
 	if _, ok := todo[node]; !ok {
@@ -134,7 +136,7 @@ func orderSteps_visit(
 	return nil
 }
 
-type slotRefs []SlotReference
+type slotRefs []api.SlotReference
 
 func (s slotRefs) Len() int      { return len(s) }
 func (s slotRefs) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
@@ -142,21 +144,21 @@ func (s slotRefs) Less(i, j int) bool {
 	return s[i].StepName < s[j].StepName || s[i].SlotName < s[j].SlotName
 }
 
-func inputSlotReferences(s StepUnion) (r []SlotReference) {
+func inputSlotReferences(s api.StepUnion) (r []api.SlotReference) {
 	switch x := s.(type) {
-	case Operation:
+	case api.Operation:
 		for k := range x.Inputs {
 			r = append(r, k)
 		}
 		return r
-	case Module:
+	case api.Module:
 		for _, imp := range x.Imports {
 			switch imp2 := imp.(type) {
-			case ImportRef_Catalog:
+			case api.ImportRef_Catalog:
 				// pass
-			case ImportRef_Parent:
-				r = append(r, SlotReference(imp2))
-			case ImportRef_Ingest:
+			case api.ImportRef_Parent:
+				r = append(r, api.SlotReference(imp2))
+			case api.ImportRef_Ingest:
 				// this is panic-worthy because it should've been checked earlier.
 				panic("submodules can't have ingest imports!")
 			}
@@ -166,17 +168,17 @@ func inputSlotReferences(s StepUnion) (r []SlotReference) {
 	panic("unreachable")
 }
 
-func outputSlotReferences(s StepUnion) map[SlotName]struct{} {
-	r := make(map[SlotName]struct{})
+func outputSlotReferences(s api.StepUnion) map[api.SlotName]struct{} {
+	r := make(map[api.SlotName]struct{})
 	switch x := s.(type) {
-	case Operation:
+	case api.Operation:
 		for k := range x.Outputs {
 			r[k] = struct{}{}
 		}
 		return r
-	case Module:
+	case api.Module:
 		for itemName := range x.Exports {
-			r[SlotName(itemName)] = struct{}{}
+			r[api.SlotName(itemName)] = struct{}{}
 		}
 		return r
 	}
