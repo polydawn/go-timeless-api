@@ -18,7 +18,7 @@ func TestPinning(t *testing.T) {
 		},
 		Operations: map[StepName]StepUnion{
 			"stepA": Operation{
-				Inputs: map[SlotReference]AbsPath{
+				Inputs: map[SlotRef]AbsPath{
 					{"", "base"}: "/",
 					{"", "foo"}:  "/foo",
 					{"", "bar"}:  "/bar",
@@ -36,7 +36,7 @@ func TestPinning(t *testing.T) {
 				},
 				Operations: map[StepName]StepUnion{
 					"op": Operation{
-						Inputs: map[SlotReference]AbsPath{
+						Inputs: map[SlotRef]AbsPath{
 							{"", "base"}:   "/",
 							{"", "bar"}:    "/bar",
 							{"", "wodget"}: "/src",
@@ -47,10 +47,10 @@ func TestPinning(t *testing.T) {
 						},
 					},
 				},
-				Exports: map[ItemName]SlotReference{"barred": {"op", "intermediate"}},
+				Exports: map[ItemName]SlotRef{"barred": {"op", "intermediate"}},
 			},
 			"stepC": Operation{
-				Inputs: map[SlotReference]AbsPath{
+				Inputs: map[SlotRef]AbsPath{
 					{"", "base"}:        "/",
 					{"stepB", "barred"}: "/bar",
 				},
@@ -60,7 +60,7 @@ func TestPinning(t *testing.T) {
 				},
 			},
 		},
-		Exports: map[ItemName]SlotReference{
+		Exports: map[ItemName]SlotRef{
 			"src":             {"", "foo"},
 			"bin-linux-amd64": {"stepC", "final"},
 		},
@@ -86,11 +86,11 @@ func TestPinning(t *testing.T) {
 		},
 	}.ViewCatalog)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, pins, ShouldEqual, map[SubmoduleSlotReference]WareID{
-		// {"", SlotReference{"", "foo"}}:       {}, // FUTURE we'll need the ingest tool to make this something interesting
-		{"", SlotReference{"", "base"}}:      {"tar", "asdflkjgh"},
-		{"", SlotReference{"", "bar"}}:       {"tar", "qwer1"},
-		{"stepB", SlotReference{"", "base"}}: {"tar", "asdflkjgh"},
-		{"stepB", SlotReference{"", "bar"}}:  {"tar", "qwer2"},
+	Wish(t, pins, ShouldEqual, map[SubmoduleSlotRef]WareID{
+		// {"", SlotRef{"", "foo"}}:       {}, // FUTURE we'll need the ingest tool to make this something interesting
+		{"", SlotRef{"", "base"}}:      {"tar", "asdflkjgh"},
+		{"", SlotRef{"", "bar"}}:       {"tar", "qwer1"},
+		{"stepB", SlotRef{"", "base"}}: {"tar", "asdflkjgh"},
+		{"stepB", SlotRef{"", "bar"}}:  {"tar", "qwer2"},
 	})
 }

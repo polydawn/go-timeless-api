@@ -1,19 +1,23 @@
 package api
 
+// n.b. nomenclature: "*Ref" is a usable tuple; "*Name" is one coordinate in a Ref.
+// types are abbreviated to "*Ref"; funcs usually use the full word "*Reference*";
+// funcs that are factories (or parse helpers, etc) for a type are also abbreviated.
+
 type SlotName string
 type StepName string
-type SlotReference struct {
+type SlotRef struct {
 	StepName // zero for module import reference
 	SlotName
 }
-type SubmoduleReference string // .-sep.  really is a []StepName, but we wanted something easily used as a map key.
-type SubmoduleStepReference struct {
-	SubmoduleReference
+type SubmoduleRef string // .-sep.  really is a []StepName, but we wanted something easily used as a map key.
+type SubmoduleStepRef struct {
+	SubmoduleRef
 	StepName
 }
-type SubmoduleSlotReference struct {
-	SubmoduleReference
-	SlotReference
+type SubmoduleSlotRef struct {
+	SubmoduleRef
+	SlotRef
 }
 
 // ImportRef is a sum type, containing either a
@@ -45,7 +49,7 @@ type ImportRef interface {
 }
 
 type ImportRef_Catalog ItemRef
-type ImportRef_Parent SlotReference
+type ImportRef_Parent SlotRef
 type ImportRef_Ingest struct {
 	IngestKind string
 	Args       string
@@ -56,5 +60,5 @@ func (ImportRef_Parent) _ImportRef()  {}
 func (ImportRef_Ingest) _ImportRef()  {}
 
 func (x ImportRef_Catalog) String() string { return "catalog:" + (ItemRef(x)).String() }
-func (x ImportRef_Parent) String() string  { return "parent:" + (SlotReference(x)).String() }
+func (x ImportRef_Parent) String() string  { return "parent:" + (SlotRef(x)).String() }
 func (x ImportRef_Ingest) String() string  { return "ingest:" + "TODO" } // TODO

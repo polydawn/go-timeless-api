@@ -55,21 +55,21 @@ func TestModuleSerialization(t *testing.T) {
 								Outputs: map[SlotName]AbsPath{"slot": "/"},
 							},
 						},
-						Exports: map[ItemName]SlotReference{
+						Exports: map[ItemName]SlotRef{
 							"zowslot": {"rlydeep", "slot"},
 						},
 					},
 					"midstep": Operation{
-						Inputs:  map[SlotReference]AbsPath{{"deeper", "zowslot"}: "/"},
+						Inputs:  map[SlotRef]AbsPath{{"deeper", "zowslot"}: "/"},
 						Outputs: map[SlotName]AbsPath{"slot": "/"},
 					},
 				},
-				Exports: map[ItemName]SlotReference{
+				Exports: map[ItemName]SlotRef{
 					"wowslot": {"midstep", "slot"},
 				},
 			},
 			"stepWub": Operation{
-				Inputs: map[SlotReference]AbsPath{
+				Inputs: map[SlotRef]AbsPath{
 					{"stepSub", "wowslot"}: "/",
 				},
 			},

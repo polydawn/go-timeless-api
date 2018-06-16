@@ -11,7 +11,7 @@ import (
 	ModuleOrderStepsDeep is like ModuleOrderSteps, but returns *all* steps, recursively
 	including all submodules and their steps.
 */
-func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error) {
+func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 	levelOrder, err := ModuleOrderSteps(m)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepReference, _ error
 	for _, stepName := range levelOrder {
 		switch x := m.Operations[stepName].(type) {
 		case api.Operation:
-			r = append(r, api.SubmoduleStepReference{"", stepName})
+			r = append(r, api.SubmoduleStepRef{"", stepName})
 		case api.Module:
 			subOrder, err := ModuleOrderStepsDeep(x)
 			if err != nil {
@@ -73,7 +73,7 @@ func (s stepNames) Len() int           { return len(s) }
 func (s stepNames) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s stepNames) Less(i, j int) bool { return s[i] < s[j] }
 
-// func OrderStepsYielding(m Module, want []SlotReference) ([]StepName, error)
+// func OrderStepsYielding(m Module, want []SlotRef) ([]StepName, error)
 //   Easier to implement this later by reverse walking the toposort of []StepName
 //    that we've already computed and simply dropping irrelevant ones.
 //    This approach has a lower CPU time if we've already done the toposort;
@@ -99,7 +99,7 @@ func orderSteps_visit(
 	// Mark self for loop detection.
 	loopDetector[node] = struct{}{}
 	// Extract any imports which are dependency wiring.
-	wires := inputSlotReferences(m.Operations[node])
+	wires := inputSlotRefs(m.Operations[node])
 	// Check that those actually point somewhere.
 	for _, wire := range wires {
 		// TODO: all of these name existence checks should be done linearly up front (... also).
@@ -136,7 +136,7 @@ func orderSteps_visit(
 	return nil
 }
 
-type slotRefs []api.SlotReference
+type slotRefs []api.SlotRef
 
 func (s slotRefs) Len() int      { return len(s) }
 func (s slotRefs) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
@@ -144,7 +144,7 @@ func (s slotRefs) Less(i, j int) bool {
 	return s[i].StepName < s[j].StepName || s[i].SlotName < s[j].SlotName
 }
 
-func inputSlotReferences(s api.StepUnion) (r []api.SlotReference) {
+func inputSlotRefs(s api.StepUnion) (r []api.SlotRef) {
 	switch x := s.(type) {
 	case api.Operation:
 		for k := range x.Inputs {
@@ -157,7 +157,7 @@ func inputSlotReferences(s api.StepUnion) (r []api.SlotReference) {
 			case api.ImportRef_Catalog:
 				// pass
 			case api.ImportRef_Parent:
-				r = append(r, api.SlotReference(imp2))
+				r = append(r, api.SlotRef(imp2))
 			case api.ImportRef_Ingest:
 				// this is panic-worthy because it should've been checked earlier.
 				panic("submodules can't have ingest imports!")

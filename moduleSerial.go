@@ -8,7 +8,7 @@ var Atlas_Module = atlas.MustBuild(
 	Module_AtlasEntry,
 	StepUnion_AtlasEntry,
 	Operation_AtlasEntry,
-	SlotReference_AtlasEntry,
+	SlotRef_AtlasEntry,
 	ImportRef_AtlasEntry,
 	OpAction_AtlasEntry,
 	OpActionUserinfo_AtlasEntry,

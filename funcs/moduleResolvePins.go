@@ -7,8 +7,8 @@ import (
 	"go.polydawn.net/go-timeless-api/hitch"
 )
 
-func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.SubmoduleSlotReference]api.WareID, error) {
-	r := make(map[api.SubmoduleSlotReference]api.WareID)
+func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.SubmoduleSlotRef]api.WareID, error) {
+	r := make(map[api.SubmoduleSlotRef]api.WareID)
 
 	// resolve each of our imports in this module
 	for slotName, impRef := range m.Imports {
@@ -23,7 +23,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 			if err != nil {
 				return nil, err
 			}
-			r[api.SubmoduleSlotReference{"", api.SlotReference{"", slotName}}] = *wareID
+			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
 		case api.ImportRef_Parent:
 			// pass.  we don't resolve these in advance; and it's checked by the 'OrderSteps' func that this refers to *something*.
 		case api.ImportRef_Ingest:

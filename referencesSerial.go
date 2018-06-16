@@ -7,27 +7,27 @@ import (
 	"github.com/polydawn/refmt/obj/atlas"
 )
 
-var SlotReference_AtlasEntry = atlas.BuildEntry(SlotReference{}).Transform().
-	TransformMarshal(atlas.MakeMarshalTransformFunc(func(x SlotReference) (string, error) { return x.String(), nil })).
-	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(ParseSlotReference)).
+var SlotRef_AtlasEntry = atlas.BuildEntry(SlotRef{}).Transform().
+	TransformMarshal(atlas.MakeMarshalTransformFunc(func(x SlotRef) (string, error) { return x.String(), nil })).
+	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(ParseSlotRef)).
 	Complete()
 
-func ParseSlotReference(x string) (SlotReference, error) {
+func ParseSlotRef(x string) (SlotRef, error) {
 	if x == "" {
-		return SlotReference{}, fmt.Errorf("empty string is not a SlotReference")
+		return SlotRef{}, fmt.Errorf("empty string is not a SlotRef")
 	}
 	ss := strings.SplitN(x, ".", 2)
 	switch len(ss) {
 	case 1:
-		return SlotReference{"", SlotName(ss[0])}, nil
+		return SlotRef{"", SlotName(ss[0])}, nil
 	case 2:
-		return SlotReference{StepName(ss[0]), SlotName(ss[1])}, nil
+		return SlotRef{StepName(ss[0]), SlotName(ss[1])}, nil
 	default:
-		return SlotReference{}, fmt.Errorf("slot references can be of form 'x' or 'x.y'.")
+		return SlotRef{}, fmt.Errorf("slot references can be of form 'x' or 'x.y'.")
 	}
 }
 
-func (x SlotReference) String() string {
+func (x SlotRef) String() string {
 	if x.StepName == "" && x.SlotName == "" {
 		return ""
 	} else if x.StepName == "" {
@@ -56,7 +56,7 @@ func ParseImportRef(x string) (ImportRef, error) {
 		itemRef, err := ParseItemRef(hunks[1])
 		return ImportRef_Catalog(itemRef), err
 	case "parent":
-		slotRef, err := ParseSlotReference(hunks[1])
+		slotRef, err := ParseSlotRef(hunks[1])
 		return ImportRef_Parent(slotRef), err
 	case "ingest":
 		panic("TODO") // TODO

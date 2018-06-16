@@ -13,7 +13,7 @@ import (
 func TestOperationSerialization(t *testing.T) {
 	atl := atlas.MustBuild(
 		Operation_AtlasEntry,
-		SlotReference_AtlasEntry,
+		SlotRef_AtlasEntry,
 		OpAction_AtlasEntry,
 		OpActionUserinfo_AtlasEntry,
 	)
@@ -42,8 +42,8 @@ func TestOperationSerialization(t *testing.T) {
 	})
 	t.Run("examplary operation should roundtrip", func(t *testing.T) {
 		obj := Operation{
-			Inputs: map[SlotReference]AbsPath{
-				SlotReference{"", "foo"}: "/",
+			Inputs: map[SlotRef]AbsPath{
+				SlotRef{"", "foo"}: "/",
 			},
 			Action: OpAction{
 				Exec: []string{"/script"},

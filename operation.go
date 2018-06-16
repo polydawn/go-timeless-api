@@ -3,13 +3,13 @@ package api
 type AbsPath string
 
 type Operation struct {
-	Inputs  map[SlotReference]AbsPath
+	Inputs  map[SlotRef]AbsPath
 	Action  OpAction
 	Outputs map[SlotName]AbsPath `refmt:",omitempty"`
 }
 
 type ReadyOperation struct {
-	ImportsPinned map[SlotReference]WareID // any stepname here is of course opaque to repeatr, but we also don't rewrite it, so.
+	ImportsPinned map[SlotRef]WareID // any stepname here is of course opaque to repeatr, but we also don't rewrite it, so.
 	Operation
 }
 

@@ -1,20 +1,20 @@
 package api
 
-func (ref SubmoduleReference) Contextualize(parent StepName) SubmoduleReference {
+func (ref SubmoduleRef) Contextualize(parent StepName) SubmoduleRef {
 	if ref == "" {
-		return SubmoduleReference(parent)
+		return SubmoduleRef(parent)
 	}
-	return SubmoduleReference(string(parent) + "." + string(ref))
+	return SubmoduleRef(string(parent) + "." + string(ref))
 }
-func (ref SubmoduleStepReference) Contextualize(parent StepName) SubmoduleStepReference {
-	return SubmoduleStepReference{
-		ref.SubmoduleReference.Contextualize(parent),
+func (ref SubmoduleStepRef) Contextualize(parent StepName) SubmoduleStepRef {
+	return SubmoduleStepRef{
+		ref.SubmoduleRef.Contextualize(parent),
 		ref.StepName,
 	}
 }
-func (ref SubmoduleSlotReference) Contextualize(parent StepName) SubmoduleSlotReference {
-	return SubmoduleSlotReference{
-		ref.SubmoduleReference.Contextualize(parent),
-		ref.SlotReference,
+func (ref SubmoduleSlotRef) Contextualize(parent StepName) SubmoduleSlotRef {
+	return SubmoduleSlotRef{
+		ref.SubmoduleRef.Contextualize(parent),
+		ref.SlotRef,
 	}
 }
