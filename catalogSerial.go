@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"strings"
+
+	"github.com/polydawn/refmt/obj/atlas"
 )
 
 func ParseItemRef(x string) (v ItemRef, err error) {
@@ -34,3 +36,13 @@ func (x ItemRef) String() string {
 		return string(x.ModuleName) + ":" + string(x.ReleaseName) + ":" + string(x.ItemName)
 	}
 }
+
+var Atlas_Catalog = atlas.MustBuild(
+	ModuleCatalog_AtlasEntry,
+	Release_AtlasEntry,
+	WareID_AtlasEntry,
+)
+
+var ItemRef_AtlasEntry = atlas.BuildEntry(ItemRef{}).StructMap().Autogenerate().Complete()
+var ModuleCatalog_AtlasEntry = atlas.BuildEntry(ModuleCatalog{}).StructMap().Autogenerate().Complete()
+var Release_AtlasEntry = atlas.BuildEntry(Release{}).StructMap().Autogenerate().Complete()
