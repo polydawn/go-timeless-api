@@ -17,7 +17,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 		return nil, err
 	}
 	for _, stepName := range levelOrder {
-		switch x := m.Operations[stepName].(type) {
+		switch x := m.Steps[stepName].(type) {
 		case api.Operation:
 			r = append(r, api.SubmoduleStepRef{"", stepName})
 		case api.Module:
@@ -46,15 +46,15 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 */
 func ModuleOrderSteps(m api.Module) ([]api.StepName, error) {
 	// Alloc result accumulator.
-	result := make([]api.StepName, 0, len(m.Operations))
+	result := make([]api.StepName, 0, len(m.Steps))
 	// Initialize todo set; it shrinks as we go.
-	todo := make(map[api.StepName]struct{}, len(m.Operations))
-	for step := range m.Operations {
+	todo := make(map[api.StepName]struct{}, len(m.Steps))
+	for step := range m.Steps {
 		todo[step] = struct{}{}
 	}
 	// Sort operations by their name (this is our tiebreaker, in advance).
-	stepsOrdered := make(stepNames, 0, len(m.Operations))
-	for step := range m.Operations {
+	stepsOrdered := make(stepNames, 0, len(m.Steps))
+	for step := range m.Steps {
 		stepsOrdered = append(stepsOrdered, step)
 	}
 	sort.Sort(stepsOrdered)
@@ -99,7 +99,7 @@ func orderSteps_visit(
 	// Mark self for loop detection.
 	loopDetector[node] = struct{}{}
 	// Extract any imports which are dependency wiring.
-	wires := inputSlotRefs(m.Operations[node])
+	wires := inputSlotRefs(m.Steps[node])
 	// Check that those actually point somewhere.
 	for _, wire := range wires {
 		// TODO: all of these name existence checks should be done linearly up front (... also).
@@ -110,7 +110,7 @@ func orderSteps_visit(
 				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of an import in this module", node, wire, wire.SlotName)
 			}
 		case false:
-			if op, ok := m.Operations[wire.StepName]; !ok {
+			if op, ok := m.Steps[wire.StepName]; !ok {
 				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of a step in this module", node, wire, wire.SlotName)
 			} else if _, ok := outputSlotReferences(op)[wire.SlotName]; !ok {
 				return fmt.Errorf("step %q has an invalid reference to %q: step %q has no output named %s", node, wire, wire.StepName, wire.SlotName)

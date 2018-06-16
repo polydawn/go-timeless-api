@@ -9,7 +9,7 @@ import (
 )
 
 func TestNilRelationLexicalOrdering(t *testing.T) {
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepD": api.Operation{},
 		"stepB": api.Operation{},
 		"stepA": api.Operation{},
@@ -26,7 +26,7 @@ func TestNilRelationLexicalOrdering(t *testing.T) {
 }
 
 func TestFanoutLexicalOrdering(t *testing.T) {
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepD": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
 			{"step0", "theslot"}: "/",
 		}},
@@ -55,7 +55,7 @@ func TestFanoutLexicalOrdering(t *testing.T) {
 }
 
 func TestFanInLexicalOrdering(t *testing.T) {
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepD": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
 		"stepB": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
 		"stepA": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
@@ -79,7 +79,7 @@ func TestFanInLexicalOrdering(t *testing.T) {
 }
 
 func TestSimpleLinearOrdering(t *testing.T) {
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepA": api.Operation{
 			Outputs: map[api.SlotName]api.AbsPath{"aslot": "/"},
 		},
@@ -117,7 +117,7 @@ func TestComplexOrdering(t *testing.T) {
 	                 |                    /
 	                 \--------> J -------/
 	*/
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepA": api.Operation{
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
@@ -205,7 +205,7 @@ func TestComplexOrdering(t *testing.T) {
 }
 
 func TestDeepSubmoduleOrdering(t *testing.T) {
-	basting := api.Module{Operations: map[api.StepName]api.StepUnion{
+	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
 		"stepFoo": api.Operation{
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
@@ -216,12 +216,12 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 			Imports: map[api.SlotName]api.ImportRef{
 				"subx": api.ImportRef_Parent{"stepFoo", "slot"},
 			},
-			Operations: map[api.StepName]api.StepUnion{
+			Steps: map[api.StepName]api.StepUnion{
 				"deeper": api.Module{
 					Imports: map[api.SlotName]api.ImportRef{
 						"suby": api.ImportRef_Parent{"", "subx"},
 					},
-					Operations: map[api.StepName]api.StepUnion{
+					Steps: map[api.StepName]api.StepUnion{
 						"rlydeep": api.Operation{
 							Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 						},

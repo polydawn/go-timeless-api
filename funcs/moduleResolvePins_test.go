@@ -16,7 +16,7 @@ func TestPinning(t *testing.T) {
 			"foo":  ImportRef_Ingest{"git", ".:HEAD"},
 			"bar":  ImportRef_Catalog{"publishing.group/bar", "v2.0", "bin-linux-amd64"},
 		},
-		Operations: map[StepName]StepUnion{
+		Steps: map[StepName]StepUnion{
 			"stepA": Operation{
 				Inputs: map[SlotRef]AbsPath{
 					{"", "base"}: "/",
@@ -34,7 +34,7 @@ func TestPinning(t *testing.T) {
 					"bar":    ImportRef_Catalog{"publishing.group/bar", "v2.2", "bin-linux-amd64"}, // n.b. submodule uses different version of bar than parent; that's allowed.
 					"wodget": ImportRef_Parent{"stepA", "intermediate"},
 				},
-				Operations: map[StepName]StepUnion{
+				Steps: map[StepName]StepUnion{
 					"op": Operation{
 						Inputs: map[SlotRef]AbsPath{
 							{"", "base"}:   "/",

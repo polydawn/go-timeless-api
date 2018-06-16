@@ -5,9 +5,9 @@ type MainModule struct {
 	Module
 }
 type Module struct {
-	Imports    map[SlotName]ImportRef
-	Operations map[StepName]StepUnion     `refmt:"steps"`
-	Exports    map[ItemName]SlotRef `refmt:",omitempty"`
+	Imports map[SlotName]ImportRef
+	Steps   map[StepName]StepUnion
+	Exports map[ItemName]SlotRef `refmt:",omitempty"`
 }
 
 type StepUnion interface {

@@ -32,7 +32,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 	}
 
 	// recurse, and fold all those references into our return set
-	for stepName, step := range m.Operations {
+	for stepName, step := range m.Steps {
 		switch x := step.(type) {
 		case api.Operation:
 			// pass.  hakuna matata; operations only have local references to their module's imports.

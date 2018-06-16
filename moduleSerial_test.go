@@ -34,7 +34,7 @@ func TestModuleSerialization(t *testing.T) {
 		})
 	})
 	t.Run("exhilerating module should roundtrip", func(t *testing.T) {
-		obj := Module{Operations: map[StepName]StepUnion{
+		obj := Module{Steps: map[StepName]StepUnion{
 			"stepFoo": Operation{
 				Outputs: map[SlotName]AbsPath{"slot": "/"},
 			},
@@ -45,12 +45,12 @@ func TestModuleSerialization(t *testing.T) {
 				Imports: map[SlotName]ImportRef{
 					"subx": ImportRef_Parent{"stepFoo", "slot"},
 				},
-				Operations: map[StepName]StepUnion{
+				Steps: map[StepName]StepUnion{
 					"deeper": Module{
 						Imports: map[SlotName]ImportRef{
 							"suby": ImportRef_Parent{"", "subx"},
 						},
-						Operations: map[StepName]StepUnion{
+						Steps: map[StepName]StepUnion{
 							"rlydeep": Operation{
 								Outputs: map[SlotName]AbsPath{"slot": "/"},
 							},
