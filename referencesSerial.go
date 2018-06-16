@@ -65,3 +65,13 @@ func ParseImportRef(x string) (ImportRef, error) {
 	}
 	return nil, nil
 }
+
+func (x SubmoduleStepRef) String() string {
+	if x.SubmoduleRef == "" && x.StepName == "" {
+		return ""
+	} else if x.SubmoduleRef == "" {
+		return string(x.StepName)
+	} else {
+		return string(x.SubmoduleRef) + "." + string(x.StepName)
+	}
+}
