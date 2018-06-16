@@ -27,6 +27,8 @@ func TestModuleNameValidation(t *testing.T) {
 		{"sure/NoCasePlz", fmtMatchError("moduleName path segment", validation_moduleNamePathHunk_msg)},
 		{"NoCaseDomains/nope", fmtMatchError("moduleName first segment", validation_dns1123Subdomain_msg)},
 		{"noskipping//anysegments", fmtMatchError("moduleName path segment", validation_moduleNamePathHunk_msg)},
+		{"notrailing/", fmtMatchError("moduleName path segment", validation_moduleNamePathHunk_msg)},
+		{"notrailing/never/", fmtMatchError("moduleName path segment", validation_moduleNamePathHunk_msg)},
 	} {
 		t.Run(string(tr.Value), func(t *testing.T) {
 			Wish(t, tr.Value.Validate(), ShouldEqual, tr.Error)
