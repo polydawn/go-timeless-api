@@ -26,7 +26,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 				return nil, err
 			}
 			for _, subStep := range subOrder {
-				r = append(r, subStep.Contextualize(stepName))
+				r = append(r, subStep.Contextualize(api.SubmoduleRef(stepName)))
 			}
 		}
 	}

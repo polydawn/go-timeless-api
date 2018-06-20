@@ -43,7 +43,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 				return nil, err
 			}
 			for ref, wareID := range subPins {
-				r[ref.Contextualize(stepName)] = wareID
+				r[ref.Contextualize(api.SubmoduleRef(stepName))] = wareID
 			}
 		}
 	}
