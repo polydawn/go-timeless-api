@@ -8,8 +8,8 @@ type Operation struct {
 	Outputs map[SlotName]AbsPath `refmt:",omitempty"`
 }
 
-type ReadyOperation struct {
-	ImportsPinned map[SlotRef]WareID // any stepname here is of course opaque to repeatr, but we also don't rewrite it, so.
+type BoundOperation struct {
+	InputPins map[SlotRef]WareID
 	Operation
 }
 
@@ -135,3 +135,10 @@ const (
 	*/
 	Policy_Sysad Policy = "sysad"
 )
+
+type OperationRecord struct {
+	Guid     string              // random number, presumed globally unique.
+	Time     int64               // time at start of build.
+	ExitCode int                 // exit code of the contained process.
+	Results  map[SlotName]WareID // wares produced by the run!
+}
