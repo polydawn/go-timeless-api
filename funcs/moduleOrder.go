@@ -21,6 +21,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 		case api.Operation:
 			r = append(r, api.SubmoduleStepRef{"", stepName})
 		case api.Module:
+			r = append(r, api.SubmoduleStepRef{"", stepName})
 			subOrder, err := ModuleOrderStepsDeep(x)
 			if err != nil {
 				return nil, err

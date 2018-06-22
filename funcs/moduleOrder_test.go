@@ -250,6 +250,8 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 	Wish(t, order, ShouldEqual, []api.SubmoduleStepRef{
 		{"", "stepBar"},
 		{"", "stepFoo"},
+		{"", "stepSub"},
+		{"stepSub", "deeper"},
 		{"stepSub.deeper", "rlydeep"},
 		{"stepSub", "midstep"},
 		{"", "stepWub"},
