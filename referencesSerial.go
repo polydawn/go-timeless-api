@@ -75,3 +75,17 @@ func (x SubmoduleStepRef) String() string {
 		return string(x.SubmoduleRef) + "." + string(x.StepName)
 	}
 }
+
+func (x SubmoduleSlotRef) String() string {
+	if x.SubmoduleRef == "" && x.StepName == "" && x.SlotName == "" {
+		return ""
+	} else if x.SubmoduleRef == "" && x.StepName == "" {
+		return string(x.SlotName)
+	} else if x.StepName == "" {
+		return string(x.SubmoduleRef) + "." + string(x.SlotName)
+	} else if x.SubmoduleRef == "" {
+		return string(x.StepName) + "." + string(x.SlotName)
+	} else {
+		return string(x.SubmoduleRef) + "." + string(x.StepName) + "." + string(x.SlotName)
+	}
+}

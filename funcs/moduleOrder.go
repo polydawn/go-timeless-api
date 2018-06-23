@@ -7,11 +7,45 @@ import (
 	"go.polydawn.net/go-timeless-api"
 )
 
+type StepList []api.StepName
+type StepTree []api.SubmoduleStepRef
+
+/*
+	AppendSubtree returns a new subtree, appending the given `t2` to this `t`
+	after first contextualizing all the stepnames in `t2` with the given StepName.
+	AppendSubtree is mostly used in ModuleOrderStepsDeep.
+*/
+func (t StepTree) AppendSubtree(submoduleName api.StepName, t2 StepTree) StepTree {
+	l := len(t)
+	t3 := make(StepTree, l+len(t2))
+	copy(t3, t)
+	for i, subStep := range t2 {
+		t3[l+i] = subStep.Contextualize(api.SubmoduleRef(submoduleName))
+	}
+	return t3
+}
+
+/*
+	DetachSubtree is roughly the opposite of AppendSubtree: it returns a new StepTree
+	containing only those elements which were prefixed by `submoduleName`, and
+	de-contextualizes them of that `submoduleName` prefix.
+	This is often useful when traversing a module recursively while following a StepTree.
+*/
+func (t StepTree) DetachSubtree(submoduleName api.StepName) StepTree {
+	t2 := StepTree{}
+	for _, step := range t {
+		if step.SubmoduleRef.First() == submoduleName {
+			t2 = append(t2, step.Decontextualize())
+		}
+	}
+	return t2
+}
+
 /*
 	ModuleOrderStepsDeep is like ModuleOrderSteps, but returns *all* steps, recursively
 	including all submodules and their steps.
 */
-func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
+func ModuleOrderStepsDeep(m api.Module) (r StepTree, _ error) {
 	levelOrder, err := ModuleOrderSteps(m)
 	if err != nil {
 		return nil, err
@@ -26,9 +60,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 			if err != nil {
 				return nil, err
 			}
-			for _, subStep := range subOrder {
-				r = append(r, subStep.Contextualize(api.SubmoduleRef(stepName)))
-			}
+			r = r.AppendSubtree(stepName, subOrder)
 		}
 	}
 	return r, nil
@@ -45,7 +77,7 @@ func ModuleOrderStepsDeep(m api.Module) (r []api.SubmoduleStepRef, _ error) {
 	is more important than cleverness; so is the regional stability of the
 	sort in the face of changes in other parts of the graph.
 */
-func ModuleOrderSteps(m api.Module) ([]api.StepName, error) {
+func ModuleOrderSteps(m api.Module) (StepList, error) {
 	// Alloc result accumulator.
 	result := make([]api.StepName, 0, len(m.Steps))
 	// Initialize todo set; it shrinks as we go.

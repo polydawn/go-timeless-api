@@ -7,8 +7,26 @@ import (
 	"go.polydawn.net/go-timeless-api/hitch"
 )
 
-func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.SubmoduleSlotRef]api.WareID, error) {
-	r := make(map[api.SubmoduleSlotRef]api.WareID)
+type Pins map[api.SubmoduleSlotRef]api.WareID
+
+func (t Pins) AppendSubtree(submoduleName api.StepName, t2 Pins) {
+	for ref, wareID := range t2 {
+		t[ref.Contextualize(api.SubmoduleRef(submoduleName))] = wareID
+	}
+}
+
+func (t Pins) DetachSubtree(submoduleName api.StepName) Pins {
+	t2 := Pins{}
+	for ref, wareID := range t {
+		if ref.First() == submoduleName {
+			t2[ref.Decontextualize()] = wareID
+		}
+	}
+	return t2
+}
+
+func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (Pins, error) {
+	r := make(Pins)
 
 	// resolve each of our imports in this module
 	for slotName, impRef := range m.Imports {
@@ -42,9 +60,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (map[api.Submo
 			if err != nil {
 				return nil, err
 			}
-			for ref, wareID := range subPins {
-				r[ref.Contextualize(api.SubmoduleRef(stepName))] = wareID
-			}
+			r.AppendSubtree(stepName, subPins)
 		}
 	}
 	return r, nil

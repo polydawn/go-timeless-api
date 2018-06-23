@@ -86,7 +86,7 @@ func TestPinning(t *testing.T) {
 		},
 	}.ViewCatalog)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, pins, ShouldEqual, map[SubmoduleSlotRef]WareID{
+	Wish(t, pins, ShouldEqual, Pins{
 		// {"", SlotRef{"", "foo"}}:       {}, // FUTURE we'll need the ingest tool to make this something interesting
 		{"", SlotRef{"", "base"}}:      {"tar", "asdflkjgh"},
 		{"", SlotRef{"", "bar"}}:       {"tar", "qwer1"},

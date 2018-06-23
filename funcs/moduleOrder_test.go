@@ -17,7 +17,7 @@ func TestNilRelationLexicalOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.StepName{
+	Wish(t, order, ShouldEqual, StepList{
 		"stepA",
 		"stepB",
 		"stepC",
@@ -45,7 +45,7 @@ func TestFanoutLexicalOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.StepName{
+	Wish(t, order, ShouldEqual, StepList{
 		"step0",
 		"stepA",
 		"stepB",
@@ -69,7 +69,7 @@ func TestFanInLexicalOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.StepName{
+	Wish(t, order, ShouldEqual, StepList{
 		"stepA",
 		"stepB",
 		"stepC",
@@ -97,7 +97,7 @@ func TestSimpleLinearOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.StepName{
+	Wish(t, order, ShouldEqual, StepList{
 		"stepA",
 		"stepB",
 		"stepD",
@@ -197,7 +197,7 @@ func TestComplexOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderSteps(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.StepName{
+	Wish(t, order, ShouldEqual, StepList{
 		"stepA", "stepB", "stepC", "stepD", "stepE",
 		"stepF", "stepG", "stepH", "stepI", "stepJ",
 		"stepK", "stepL", "stepM",
@@ -247,7 +247,7 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 	}}
 	order, err := ModuleOrderStepsDeep(basting)
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, order, ShouldEqual, []api.SubmoduleStepRef{
+	Wish(t, order, ShouldEqual, StepTree{
 		{"", "stepBar"},
 		{"", "stepFoo"},
 		{"", "stepSub"},
@@ -255,6 +255,28 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 		{"stepSub.deeper", "rlydeep"},
 		{"stepSub", "midstep"},
 		{"", "stepWub"},
+	})
+}
+
+func TestStepTreeDetach(t *testing.T) {
+	t1 := StepTree{
+		{"", "stepBar"},
+		{"", "stepFoo"},
+		{"", "stepSub"},
+		{"stepSub", "deeper"},
+		{"stepSub.deeper", "rlydeep"},
+		{"stepSub", "midstep"},
+		{"", "stepWub"},
+	}
+	t2 := t1.DetachSubtree("stepSub")
+	Wish(t, t2, ShouldEqual, StepTree{
+		{"", "deeper"},
+		{"deeper", "rlydeep"},
+		{"", "midstep"},
+	})
+	t3 := t2.DetachSubtree("deeper")
+	Wish(t, t3, ShouldEqual, StepTree{
+		{"", "rlydeep"},
 	})
 }
 
