@@ -66,7 +66,7 @@ func TestPinning(t *testing.T) {
 			"bin-linux-amd64": {"stepC", "final"},
 		},
 	}
-	pins, err := ResolvePins(
+	pins, _, err := ResolvePins(
 		module,
 		mockhitch.Fixture{
 			map[ModuleName]ModuleCatalog{

@@ -26,8 +26,9 @@ func (t Pins) DetachSubtree(submoduleName api.StepName) Pins {
 	return t2
 }
 
-func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ingest.IngestTool) (Pins, error) {
+func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ingest.IngestTool) (Pins, *api.WareSourcing, error) {
 	r := make(Pins)
+	ws := api.WareSourcing{}
 
 	// resolve each of our imports in this module
 	for slotName, impRef := range m.Imports {
@@ -36,22 +37,23 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ing
 		case api.ImportRef_Catalog:
 			mcat, err := catalogTool(context.TODO(), impRef2.ModuleName)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			wareID, err := CatalogPluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
+			// FUTURE: catalogs should be able to recommend some wareSourcing as well!
 		case api.ImportRef_Parent:
 			// pass.  we don't resolve these in advance; and it's checked by the 'OrderSteps' func that this refers to *something*.
 		case api.ImportRef_Ingest:
 			wareID, wareSourcing, err := ingestTool(context.TODO(), impRef2)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
-			_ = wareSourcing // TODO
+			ws.Append(*wareSourcing)
 		}
 	}
 
@@ -62,12 +64,13 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ing
 			// pass.  hakuna matata; operations only have local references to their module's imports.
 		case api.Module:
 			// recurse, and contextualize all refs from the deeper module(s).
-			subPins, err := ResolvePins(x, catalogTool, nil)
+			subPins, wareSourcing, err := ResolvePins(x, catalogTool, nil)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			r.AppendSubtree(stepName, subPins)
+			ws.Append(*wareSourcing)
 		}
 	}
-	return r, nil
+	return r, &ws, nil
 }
