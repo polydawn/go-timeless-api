@@ -5,6 +5,7 @@ import (
 
 	"go.polydawn.net/go-timeless-api"
 	"go.polydawn.net/go-timeless-api/hitch"
+	"go.polydawn.net/go-timeless-api/ingest"
 )
 
 type Pins map[api.SubmoduleSlotRef]api.WareID
@@ -25,7 +26,7 @@ func (t Pins) DetachSubtree(submoduleName api.StepName) Pins {
 	return t2
 }
 
-func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (Pins, error) {
+func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ingest.IngestTool) (Pins, error) {
 	r := make(Pins)
 
 	// resolve each of our imports in this module
@@ -45,7 +46,12 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (Pins, error) 
 		case api.ImportRef_Parent:
 			// pass.  we don't resolve these in advance; and it's checked by the 'OrderSteps' func that this refers to *something*.
 		case api.ImportRef_Ingest:
-			// TODO we need an 'ingestTool' of some kind, at least for the topmost module.
+			wareID, wareSourcing, err := ingestTool(context.TODO(), impRef2)
+			if err != nil {
+				return nil, err
+			}
+			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
+			_ = wareSourcing // TODO
 		}
 	}
 
@@ -56,7 +62,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool) (Pins, error) 
 			// pass.  hakuna matata; operations only have local references to their module's imports.
 		case api.Module:
 			// recurse, and contextualize all refs from the deeper module(s).
-			subPins, err := ResolvePins(x, catalogTool)
+			subPins, err := ResolvePins(x, catalogTool, nil)
 			if err != nil {
 				return nil, err
 			}

@@ -1,6 +1,7 @@
 package funcs
 
 import (
+	"context"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
@@ -65,29 +66,35 @@ func TestPinning(t *testing.T) {
 			"bin-linux-amd64": {"stepC", "final"},
 		},
 	}
-	pins, err := ResolvePins(module, mockhitch.Fixture{
-		map[ModuleName]ModuleCatalog{
-			"publishing.group/base": ModuleCatalog{"publishing.group/base", []Release{
-				{Name: "v2018",
-					Items: map[ItemName]WareID{
-						"bin-linux-amd64": WareID{"tar", "asdflkjgh"},
-					}},
-			}},
-			"publishing.group/bar": ModuleCatalog{"publishing.group/bar", []Release{
-				{Name: "v2.0",
-					Items: map[ItemName]WareID{
-						"bin-linux-amd64": WareID{"tar", "qwer1"},
-					}},
-				{Name: "v2.2",
-					Items: map[ItemName]WareID{
-						"bin-linux-amd64": WareID{"tar", "qwer2"},
-					}},
-			}},
+	pins, err := ResolvePins(
+		module,
+		mockhitch.Fixture{
+			map[ModuleName]ModuleCatalog{
+				"publishing.group/base": ModuleCatalog{"publishing.group/base", []Release{
+					{Name: "v2018",
+						Items: map[ItemName]WareID{
+							"bin-linux-amd64": WareID{"tar", "asdflkjgh"},
+						}},
+				}},
+				"publishing.group/bar": ModuleCatalog{"publishing.group/bar", []Release{
+					{Name: "v2.0",
+						Items: map[ItemName]WareID{
+							"bin-linux-amd64": WareID{"tar", "qwer1"},
+						}},
+					{Name: "v2.2",
+						Items: map[ItemName]WareID{
+							"bin-linux-amd64": WareID{"tar", "qwer2"},
+						}},
+				}},
+			},
+		}.ViewCatalog,
+		func(_ context.Context, ingestRef ImportRef_Ingest) (*WareID, *WareSourcing, error) {
+			return &WareID{"git", "f00f"}, &WareSourcing{}, nil
 		},
-	}.ViewCatalog)
+	)
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, pins, ShouldEqual, Pins{
-		// {"", SlotRef{"", "foo"}}:       {}, // FUTURE we'll need the ingest tool to make this something interesting
+		{"", SlotRef{"", "foo"}}:       {"git", "f00f"},
 		{"", SlotRef{"", "base"}}:      {"tar", "asdflkjgh"},
 		{"", SlotRef{"", "bar"}}:       {"tar", "qwer1"},
 		{"stepB", SlotRef{"", "base"}}: {"tar", "asdflkjgh"},
