@@ -49,3 +49,30 @@ func (ws *WareSourcing) AppendByWare(wareID WareID, locations ...WarehouseLocati
 	}
 	ws.ByWare[wareID] = append(ws.ByWare[wareID], locations...)
 }
+
+// PivotToWareIDs returns a new and reduced WareSourcing where all data is
+// indexed ByWareID for each wareID in the argument set.
+// All the ByPackType for a type "tar" will be appended to the ByWareID
+// index for all wareIDs of type "tar", and so forth.
+// ByModule data is ignored (you should flip that to ByWareID-indexed
+// immediately when you load it).
+func (ws WareSourcing) PivotToWareIDs(wareIDs map[WareID]struct{}) WareSourcing {
+	ws2 := WareSourcing{ByWare: make(map[WareID][]WarehouseLocation, len(wareIDs))}
+	for wareID := range wareIDs {
+		// Copy over anything already explicitly wareID-indexed.
+		ws2.ByWare[wareID] = ws.ByWare[wareID]
+		// Append packtype-general info.
+		ws2.ByWare[wareID] = append(ws2.ByWare[wareID], ws.ByPackType[wareID.Type]...)
+	}
+	return ws2
+}
+
+// PivotToInputs is a shortcut for calling PivotToWareIDs with the set of
+// inputs to a bound Op.
+func (ws WareSourcing) PivotToInputs(boundOp BoundOperation) WareSourcing {
+	wareIDs := make(map[WareID]struct{}, len(boundOp.InputPins))
+	for _, wareID := range boundOp.InputPins {
+		wareIDs[wareID] = struct{}{}
+	}
+	return ws.PivotToWareIDs(wareIDs)
+}

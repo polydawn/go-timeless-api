@@ -52,10 +52,7 @@ func Run(
 		SaveUrls:  make(map[api.AbsPath]api.WarehouseLocation),
 	}
 	for slotRef, pth := range boundOp.Inputs {
-		frmCtx.FetchUrls[pth] = append(
-			[]api.WarehouseLocation{"ca+file://.timeless/warehouse/"},
-			wareSourcing.ByWare[boundOp.InputPins[slotRef]]...,
-		)
+		frmCtx.FetchUrls[pth] = wareSourcing.ByWare[boundOp.InputPins[slotRef]]
 	}
 	for _, pth := range boundOp.Outputs {
 		frmCtx.SaveUrls[pth] = "ca+file://.timeless/warehouse/"
