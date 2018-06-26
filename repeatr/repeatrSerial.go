@@ -2,10 +2,14 @@ package repeatr
 
 import (
 	"github.com/polydawn/refmt/obj/atlas"
+
+	"go.polydawn.net/go-timeless-api"
 )
 
 var Atlas = atlas.MustBuild(
 	Event_AtlasEntry,
+	api.OperationRecord_AtlasEntry,
+	api.WareID_AtlasEntry,
 )
 
 var Event_AtlasEntry = atlas.BuildEntry((*Event)(nil)).KeyedUnion().
