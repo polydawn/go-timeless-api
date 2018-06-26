@@ -130,11 +130,15 @@ func Run(
 					record.Results[outputReverseMap[pth]] = wareID
 				}
 			}
+			monitor.Send(repeatr.Event_Result{record, err})
 			cmd.Wait()
 			return
-		default: // For all other messages: forward to the monitor channel (if it exists!)
-			// NYI.
-			continue
+		case event_Log:
+			monitor.Send(repeatr.Event_Log(msg))
+		case event_Output:
+			monitor.Send(repeatr.Event_Output(msg))
+		default:
+			panic(fmt.Errorf("unhandled message type %T", msg))
 		}
 	}
 }

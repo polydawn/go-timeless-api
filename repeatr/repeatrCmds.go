@@ -20,17 +20,28 @@ type (
 		Chan <-chan string
 	}
 
+	// Monitor hold a channel which is used for event reporting.
+	// Logs, contained process output, and results will all be sent to the
+	// channel if one is provided.
+	//
+	// The same channel and monitor may be used for multiple runs.
+	// The channel is not closed when the job is done; any goroutine with
+	// blocking service to a channel used for a single job should return
+	// after recieving an Event_Result, as it will be the final event.
 	Monitor struct {
 		Chan chan<- Event
 	}
 )
 
+func (m Monitor) Send(evt Event) {
+	if m.Chan != nil {
+		m.Chan <- evt
+	}
+}
+
 type (
 	// A "union" type of all the kinds of event that may be generated in the
 	// course of any of the functions.
-	//
-	// (The 'Result' message seen on the wire, but converted into returns;
-	// it is never sent to the Monitor.Chan.)
 	Event interface {
 		_Event()
 	}
@@ -39,7 +50,7 @@ type (
 	// May include logs proxied up from rio.
 	Event_Log struct {
 		Time   time.Time   `refmt:"t"`
-		Level  int8        `refmt:"lvl"`
+		Level  byte        `refmt:"lvl"`
 		Msg    string      `refmt:"msg"`
 		Detail [][2]string `refmt:"detail,omitempty"`
 	}
@@ -53,7 +64,7 @@ type (
 		Msg  string    `refmt:"msg"`
 	}
 
-	// Final results.  (Converted into returns; not sent to Monitor.)
+	// Final results.  (Also converted into returns.)
 	Event_Result struct {
 		Record *api.OperationRecord `refmt:"runRecord,omitEmpty"`
 		Error  error                `refmt:",omitEmpty"`
