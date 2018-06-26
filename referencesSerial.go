@@ -59,7 +59,11 @@ func ParseImportRef(x string) (ImportRef, error) {
 		slotRef, err := ParseSlotRef(hunks[1])
 		return ImportRef_Parent(slotRef), err
 	case "ingest":
-		panic("TODO") // TODO
+		ss := strings.SplitN(hunks[1], ":", 2)
+		if len(ss) != 2 {
+			return nil, fmt.Errorf("valid ingest refs begin with 'ingest:thetool', where \"thetool\" may be a name of an ingest system (such as \"git\").")
+		}
+		return ImportRef_Ingest{ss[0], ss[1]}, nil
 	default:
 		return nil, fmt.Errorf("valid import refs begin with 'catalog', 'parent', or 'ingest', followed by a colon and additional information.")
 	}
