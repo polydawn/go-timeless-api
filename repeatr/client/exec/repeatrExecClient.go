@@ -23,7 +23,7 @@ var _ repeatr.RunFunc = Run
 func Run(
 	ctx context.Context,
 	boundOp api.BoundOperation, // What formula to run.
-	wareSourcing api.WareSourcing, // Suggestions on where to get wares.
+	wareSourcing api.WareSourcing, // Suggestions on where to get wares; note only the WareID index will be honored, so flip everything to that before calling.
 	input repeatr.InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor repeatr.Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
 ) (record *api.OperationRecord, err error) {
@@ -45,13 +45,17 @@ func Run(
 		outputReverseMap[pth] = slotName
 	}
 
-	// traverse operation, generate dummy formulaContext
+	// traverse operation, convert wareSourcing to formulaContext
+	//  (formulaContext will be deprecated and eventually replaced with wareSourcing)
 	frmCtx := formulaContext{
 		FetchUrls: make(map[api.AbsPath][]api.WarehouseLocation),
 		SaveUrls:  make(map[api.AbsPath]api.WarehouseLocation),
 	}
-	for _, pth := range boundOp.Inputs {
-		frmCtx.FetchUrls[pth] = []api.WarehouseLocation{"ca+file://.timeless/warehouse/"}
+	for slotRef, pth := range boundOp.Inputs {
+		frmCtx.FetchUrls[pth] = append(
+			[]api.WarehouseLocation{"ca+file://.timeless/warehouse/"},
+			wareSourcing.ByWare[boundOp.InputPins[slotRef]]...,
+		)
 	}
 	for _, pth := range boundOp.Outputs {
 		frmCtx.SaveUrls[pth] = "ca+file://.timeless/warehouse/"
