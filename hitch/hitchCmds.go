@@ -18,6 +18,11 @@ type ViewCatalogTool func(
 	api.ModuleName,
 ) (*api.ModuleCatalog, error)
 
+type ViewWarehousesTool func(
+	context.Context,
+	api.ModuleName,
+) (*api.WareSourcing, error)
+
 // for example of some other likely funcs coming up:
 
 //type ViewReplayTool func(
@@ -25,12 +30,6 @@ type ViewCatalogTool func(
 //	api.ModuleName,
 //	api.ReleaseName,
 //) (*api.ModuleReplay, error)
-
-//type ViewWarehousesTool func(
-//	context.Context,
-//	api.ModuleName,
-//	api.ReleaseName,
-//) (*api.WareSourcing, error)
 
 // n.b. this doens't really give full control over insertion order
 // but that's not something we really expect to do over an api;

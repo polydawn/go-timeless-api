@@ -26,7 +26,12 @@ func (t Pins) DetachSubtree(submoduleName api.StepName) Pins {
 	return t2
 }
 
-func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ingest.IngestTool) (Pins, *api.WareSourcing, error) {
+func ResolvePins(
+	m api.Module,
+	catalogTool hitch.ViewCatalogTool,
+	viewWarehousesTool hitch.ViewWarehousesTool,
+	ingestTool ingest.IngestTool,
+) (Pins, *api.WareSourcing, error) {
 	r := make(Pins)
 	ws := api.WareSourcing{}
 
@@ -44,7 +49,11 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ing
 				return nil, nil, err
 			}
 			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
-			// FUTURE: catalogs should be able to recommend some wareSourcing as well!
+			modWs, err := viewWarehousesTool(context.TODO(), impRef2.ModuleName)
+			if err != nil {
+				return nil, nil, err
+			}
+			ws.Append(modWs.PivotToModuleWare(*wareID, impRef2.ModuleName))
 		case api.ImportRef_Parent:
 			// pass.  we don't resolve these in advance; and it's checked by the 'OrderSteps' func that this refers to *something*.
 		case api.ImportRef_Ingest:
@@ -64,7 +73,7 @@ func ResolvePins(m api.Module, catalogTool hitch.ViewCatalogTool, ingestTool ing
 			// pass.  hakuna matata; operations only have local references to their module's imports.
 		case api.Module:
 			// recurse, and contextualize all refs from the deeper module(s).
-			subPins, wareSourcing, err := ResolvePins(x, catalogTool, nil)
+			subPins, wareSourcing, err := ResolvePins(x, catalogTool, viewWarehousesTool, nil)
 			if err != nil {
 				return nil, nil, err
 			}

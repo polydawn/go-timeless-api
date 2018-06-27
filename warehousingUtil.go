@@ -76,3 +76,21 @@ func (ws WareSourcing) PivotToInputs(boundOp BoundOperation) WareSourcing {
 	}
 	return ws.PivotToWareIDs(wareIDs)
 }
+
+// PivotToModuleWare returns WareSourcing where all data is indexed ByWareID
+// (like PivotToInputs and PivotToWareIDs), also applying any ByModule-index
+// info for the named module.  (This is typically used immediately after
+// loading the mirrors info in a module's release catalog, in order to avoid
+// needed to carry around the module-oriented info any longer.)
+func (ws WareSourcing) PivotToModuleWare(wareID WareID, assumingModName ModuleName) WareSourcing {
+	ws2 := WareSourcing{ByWare: make(map[WareID][]WarehouseLocation, 1)}
+	// Copy over anything already explicitly wareID-indexed.
+	ws2.ByWare[wareID] = ws.ByWare[wareID]
+	// Append module info.
+	forMod := ws.ByModule[assumingModName]
+	if forMod == nil {
+		return ws2
+	}
+	ws2.ByWare[wareID] = append(ws2.ByWare[wareID], forMod[wareID.Type]...)
+	return ws2
+}

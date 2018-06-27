@@ -88,6 +88,9 @@ func TestPinning(t *testing.T) {
 				}},
 			},
 		}.ViewCatalog,
+		func(_ context.Context, _ ModuleName) (*WareSourcing, error) {
+			return &WareSourcing{}, nil
+		},
 		func(_ context.Context, ingestRef ImportRef_Ingest) (*WareID, *WareSourcing, error) {
 			return &WareID{"git", "f00f"}, &WareSourcing{}, nil
 		},
