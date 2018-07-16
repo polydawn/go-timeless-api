@@ -61,4 +61,4 @@ func (ImportRef_Ingest) _ImportRef()  {}
 
 func (x ImportRef_Catalog) String() string { return "catalog:" + (ItemRef(x)).String() }
 func (x ImportRef_Parent) String() string  { return "parent:" + (SlotRef(x)).String() }
-func (x ImportRef_Ingest) String() string  { return "ingest:" + "TODO" } // TODO
+func (x ImportRef_Ingest) String() string  { return "ingest:" + x.IngestKind + ":" + x.Args }
