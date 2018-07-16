@@ -3,7 +3,9 @@ package hitch
 type ErrorCategory string
 
 const (
-	ErrUsage ErrorCategory = ("hitch-usage-error")
+	ErrUsage        ErrorCategory = ("hitch-usage-error")
+	ErrCorruptState ErrorCategory = ("hitch-corrupt-state") // Indicates saved state is corrupt somehow (does not parse, or fails invariant checks).
+
 )
 
 type LookupError string
