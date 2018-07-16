@@ -23,7 +23,7 @@ func (fix Fixture) ViewCatalog(
 ) (*api.ModuleCatalog, error) {
 	mcat, exists := fix.Catalog[modName]
 	if !exists {
-		return nil, errcat.Errorf(hitch.ErrModuleCatalogNotExist, "no catalog for module %q", modName)
+		return nil, errcat.Errorf(hitch.ErrNoSuchCatalog, "no catalog for module %q", modName)
 	}
 	return &mcat, nil
 }

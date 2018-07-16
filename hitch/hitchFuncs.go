@@ -1,4 +1,4 @@
-package funcs
+package hitch
 
 // This file is full of helpful traversal methods.
 // It's considered a practical truism that catalogs are the organizational unit
@@ -51,11 +51,3 @@ func CatalogPluckReleaseItem(cat api.ModuleCatalog, releaseName api.ReleaseName,
 		},
 	)
 }
-
-type CatalogLookupError string
-
-const (
-	ErrNoSuchCatalog CatalogLookupError = ("no-such-catalog")
-	ErrNoSuchRelease CatalogLookupError = ("no-such-release")
-	ErrNoSuchItem    CatalogLookupError = ("no-such-item")
-)

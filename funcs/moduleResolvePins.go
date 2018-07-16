@@ -44,7 +44,7 @@ func ResolvePins(
 			if err != nil {
 				return nil, nil, err
 			}
-			wareID, err := CatalogPluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
+			wareID, err := hitch.CatalogPluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
 			if err != nil {
 				return nil, nil, err
 			}

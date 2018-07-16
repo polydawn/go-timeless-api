@@ -2,9 +2,14 @@ package hitch
 
 type ErrorCategory string
 
-// REVIEW: funcs.LookupError should maybe be replaced with these hitch error categories.
+const (
+	ErrUsage ErrorCategory = ("hitch-usage-error")
+)
+
+type LookupError string
 
 const (
-	ErrUsage                 = ErrorCategory("hitch-usage-error")
-	ErrModuleCatalogNotExist = ErrorCategory("hitch-modulecatalog-not-exist")
+	ErrNoSuchCatalog LookupError = ("no-such-catalog")
+	ErrNoSuchRelease LookupError = ("no-such-release")
+	ErrNoSuchItem    LookupError = ("no-such-item")
 )
