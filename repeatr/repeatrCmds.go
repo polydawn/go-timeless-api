@@ -11,6 +11,7 @@ type RunFunc func(
 	ctx context.Context,
 	boundOp api.BoundOperation, // What formula to run.
 	wareSourcing api.WareSourcing, // Suggestions on where to get wares.
+	wareStaging api.WareStaging, // Instructions on where to store output wares.
 	input InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
 ) (*api.OperationRecord, error)

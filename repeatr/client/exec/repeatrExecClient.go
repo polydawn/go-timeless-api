@@ -24,6 +24,7 @@ func Run(
 	ctx context.Context,
 	boundOp api.BoundOperation, // What formula to run.
 	wareSourcing api.WareSourcing, // Suggestions on where to get wares; note only the WareID index will be honored, so flip everything to that before calling.
+	wareStaging api.WareStaging, // Instructions on where to store output wares.
 	input repeatr.InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor repeatr.Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
 ) (record *api.OperationRecord, err error) {
@@ -55,7 +56,7 @@ func Run(
 		frmCtx.FetchUrls[pth] = wareSourcing.ByWare[boundOp.InputPins[slotRef]]
 	}
 	for _, pth := range boundOp.Outputs {
-		frmCtx.SaveUrls[pth] = "ca+file://.timeless/warehouse/"
+		frmCtx.SaveUrls[pth] = wareStaging.ByPackType[frm.Outputs[pth].PackType]
 	}
 
 	// flip all those into formulaPlus, serialize to buffer
@@ -158,7 +159,7 @@ type (
 	}
 
 	outputSpec struct {
-		PackType string `refmt:"packtype"`
+		PackType api.PackType `refmt:"packtype"`
 
 		// filter support currently skipped.
 	}
