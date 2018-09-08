@@ -1,9 +1,10 @@
 package api
 
 /*
-	Ware IDs are content-addressable, cryptographic hashes which uniquely identify
-	a "ware" -- a packed filesystem snapshot.
-	A ware contains one or more files and directories, and metadata for each.
+	WareID is a content-addressable, cryptographic hashes that uniquely identifies
+	a "ware" -- a packed Fileset.
+	(Fileset and Ware are distinct concepts because a fileset is not packed in
+	any particular way and thus has no innate hash; a Ware is packed and hashed.)
 
 	Ware IDs are serialized as a string in two parts, separated by a colon --
 	for example like "git:f23ae1829" or "tar:WJL8or32vD".
@@ -31,3 +32,6 @@ type PackType string
 // *you never communicate them* outside of *the WareID* tuple:
 // they're technically meaningless without having
 // the PackType in hand to define their scope/encoding.
+
+// future: probably introduce a PackConfig type which is PackType+FilesetPackFilters.
+// unclear what would be ergonomic for the unpack variation.  it's less used anyway.
