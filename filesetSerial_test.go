@@ -55,11 +55,11 @@ func TestFilesetFilterSerialization(t *testing.T) {
 	t.Run("unpack lossless should roundtrip", func(t *testing.T) {
 		shouldRtUnpack(t,
 			FilesetUnpackFilter_Lossless,
-			`"uid=keep,gid=keep,mtime=keep,sticky=keep,setid=keep,dev=keep"`)
+			`"uid=follow,gid=follow,mtime=follow,sticky=follow,setid=follow,dev=follow"`)
 	})
 	t.Run("unpack lowpriv should roundtrip", func(t *testing.T) {
 		shouldRtUnpack(t,
 			FilesetUnpackFilter_LowPriv,
-			`"uid=mine,gid=mine,mtime=keep,sticky=keep,setid=reject,dev=reject"`)
+			`"uid=mine,gid=mine,mtime=follow,sticky=follow,setid=reject,dev=reject"`)
 	})
 }
