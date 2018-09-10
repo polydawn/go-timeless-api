@@ -9,6 +9,13 @@ import (
 	"github.com/polydawn/refmt/obj/atlas"
 )
 
+func MustParseFilesetPackFilter(s string) FilesetPackFilter {
+	ff, err := ParseFilesetPackFilter(s)
+	if err != nil {
+		panic(err)
+	}
+	return ff
+}
 func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 	alreadyEncountered := make(map[string]bool, 6)
 	for _, s := range strings.Split(s, ",") {
@@ -176,6 +183,13 @@ var FilesetPackFilter_AtlasEntry = atlas.BuildEntry(FilesetPackFilter{}).Transfo
 	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(ParseFilesetPackFilter)).
 	Complete()
 
+func MustParseFilesetUnpackFilter(s string) FilesetUnpackFilter {
+	ff, err := ParseFilesetUnpackFilter(s)
+	if err != nil {
+		panic(err)
+	}
+	return ff
+}
 func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 	alreadyEncountered := make(map[string]bool, 6)
 	for _, s := range strings.Split(s, ",") {
