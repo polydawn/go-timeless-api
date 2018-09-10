@@ -13,7 +13,7 @@ type UnpackFunc func(
 	path string, // Where to unpack the fileset (absolute path).
 	filters api.FilesetUnpackFilter, // Optionally: filters we should apply while unpacking.
 	placementMode PlacementMode, // Optionally: a placement mode specifying how the files should be put in the target path.  (Default is "copy".)
-	wareSourcing api.WareSourcing, // Suggestions on where to get wares.
+	fetchFrom []api.WarehouseLocation, // Suggestions on where to get wares.
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
 
@@ -22,7 +22,7 @@ type PackFunc func(
 	packType api.PackType, // The name of pack format to use.  (Most PackFunc impls support exactly one; a demux impl exists, and can route based on this string.)
 	path string, // The fileset to scan and pack (absolute path).
 	filters api.FilesetPackFilter, // Optionally: filters we should apply while unpacking.
-	warehouse api.WarehouseLocation, // Warehouse to save into (or blank to just scan).
+	saveTo api.WarehouseLocation, // Warehouse to save into (or blank to just scan).
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
 
@@ -38,8 +38,8 @@ type ScanFunc func(
 type MirrorFunc func(
 	ctx context.Context,
 	wareID api.WareID, // What wareID to mirror.
-	target api.WarehouseLocation, // Warehouse to ensure the ware is mirrored into.
-	sources api.WareSourcing, // Warehouses we can try to fetch from.
+	saveTo api.WarehouseLocation, // Warehouse to ensure the ware is mirrored into.
+	fetchFrom []api.WarehouseLocation, // Warehouses we can try to fetch from.
 	monitor Monitor, // Optionally: callbacks for progress monitoring.
 ) (api.WareID, error)
 
