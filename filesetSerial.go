@@ -21,6 +21,9 @@ func ParseFilesetPackFilter(s string) (_ FilesetPackFilter, err error) {
 		ff_unspecified, ff_unspecified, ff_unspecified,
 		ff_unspecified, ff_unspecified, ff_unspecified,
 	}
+	if s == "" {
+		return ff, nil
+	}
 	for _, s := range strings.Split(s, ",") {
 		hunks := strings.SplitN(strings.TrimSpace(s), "=", 2)
 		if len(hunks) != 2 {
@@ -216,6 +219,9 @@ func ParseFilesetUnpackFilter(s string) (_ FilesetUnpackFilter, err error) {
 	ff := FilesetUnpackFilter{
 		ff_unspecified, ff_unspecified, ff_unspecified,
 		ff_unspecified, ff_unspecified, ff_unspecified,
+	}
+	if s == "" {
+		return ff, nil
 	}
 	for _, s := range strings.Split(s, ",") {
 		hunks := strings.SplitN(strings.TrimSpace(s), "=", 2)

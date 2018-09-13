@@ -48,6 +48,35 @@ const (
 	ff_context     = -5 // if trying to figure out caching, must map this into a real value.
 )
 
+func (ff FilesetPackFilter) IsComplete() bool {
+	return !(ff.uid == ff_unspecified ||
+		ff.gid == ff_unspecified ||
+		ff.mtime == ff_unspecified ||
+		ff.sticky == ff_unspecified ||
+		ff.setid == ff_unspecified ||
+		ff.dev == ff_unspecified)
+}
+func (ff FilesetPackFilter) Apply(ff2 FilesetPackFilter) FilesetPackFilter {
+	if ff.uid == ff_unspecified {
+		ff.uid = ff2.uid
+	}
+	if ff.gid == ff_unspecified {
+		ff.gid = ff2.gid
+	}
+	if ff.mtime == ff_unspecified {
+		ff.mtime = ff2.mtime
+	}
+	if ff.sticky == ff_unspecified {
+		ff.sticky = ff2.sticky
+	}
+	if ff.setid == ff_unspecified {
+		ff.setid = ff2.setid
+	}
+	if ff.dev == ff_unspecified {
+		ff.dev = ff2.dev
+	}
+	return ff
+}
 func (ff FilesetPackFilter) Uid() (keep bool, setTo int) {
 	return ff.uid == ff_keep, ff.uid
 }
@@ -70,6 +99,35 @@ func (ff FilesetPackFilter) Dev() (keep bool, reject bool) {
 	return ff.dev == ff_keep, ff.dev == ff_reject
 }
 
+func (ff FilesetUnpackFilter) IsComplete() bool {
+	return !(ff.uid == ff_unspecified ||
+		ff.gid == ff_unspecified ||
+		ff.mtime == ff_unspecified ||
+		ff.sticky == ff_unspecified ||
+		ff.setid == ff_unspecified ||
+		ff.dev == ff_unspecified)
+}
+func (ff FilesetUnpackFilter) Apply(ff2 FilesetUnpackFilter) FilesetUnpackFilter {
+	if ff.uid == ff_unspecified {
+		ff.uid = ff2.uid
+	}
+	if ff.gid == ff_unspecified {
+		ff.gid = ff2.gid
+	}
+	if ff.mtime == ff_unspecified {
+		ff.mtime = ff2.mtime
+	}
+	if ff.sticky == ff_unspecified {
+		ff.sticky = ff2.sticky
+	}
+	if ff.setid == ff_unspecified {
+		ff.setid = ff2.setid
+	}
+	if ff.dev == ff_unspecified {
+		ff.dev = ff2.dev
+	}
+	return ff
+}
 func (ff FilesetUnpackFilter) Uid() (follow, setMine bool, setTo int) {
 	return ff.uid == ff_follow, ff.uid == ff_context, ff.uid
 }
