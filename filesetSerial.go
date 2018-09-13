@@ -16,19 +16,21 @@ func MustParseFilesetPackFilter(s string) FilesetPackFilter {
 	}
 	return ff
 }
-func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
-	alreadyEncountered := make(map[string]bool, 6)
+func ParseFilesetPackFilter(s string) (_ FilesetPackFilter, err error) {
+	ff := FilesetPackFilter{
+		ff_unspecified, ff_unspecified, ff_unspecified,
+		ff_unspecified, ff_unspecified, ff_unspecified,
+	}
 	for _, s := range strings.Split(s, ",") {
 		hunks := strings.SplitN(strings.TrimSpace(s), "=", 2)
 		if len(hunks) != 2 {
 			return ff, fmt.Errorf("fileset filter: invalid format: must be a comma-separated list of k=v pairs")
 		}
-		if alreadyEncountered[hunks[0]] == true {
-			return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
-		}
-		alreadyEncountered[hunks[0]] = true
 		switch hunks[0] {
 		case "uid":
+			if ff.uid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.uid = ff_keep
@@ -39,6 +41,9 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 				}
 			}
 		case "gid":
+			if ff.gid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.gid = ff_keep
@@ -49,6 +54,9 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 				}
 			}
 		case "mtime":
+			if ff.mtime != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.mtime = ff_keep
@@ -74,6 +82,9 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 				ff.mtime = t.Unix()
 			}
 		case "sticky":
+			if ff.sticky != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.sticky = ff_keep
@@ -83,6 +94,9 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 				return ff, fmt.Errorf("fileset filter: invalid option: sticky must be 'keep' or 'ignore'")
 			}
 		case "setid":
+			if ff.setid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.setid = ff_keep
@@ -94,6 +108,9 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 				return ff, fmt.Errorf("fileset filter: invalid option: setid must be 'keep', 'ignore', or 'reject'")
 			}
 		case "dev":
+			if ff.dev != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "keep":
 				ff.dev = ff_keep
@@ -112,67 +129,72 @@ func ParseFilesetPackFilter(s string) (ff FilesetPackFilter, err error) {
 }
 
 func (x FilesetPackFilter) String() (v string) {
-	var sb strings.Builder
-	sb.WriteString("uid=")
+	hunks := make([]string, 0, 6)
 	switch {
+	case x.uid == ff_unspecified:
+		// skip
 	case x.uid == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "uid=keep")
 	case x.uid >= 0:
-		sb.WriteString(strconv.Itoa(x.uid))
+		hunks = append(hunks, "uid="+strconv.Itoa(x.uid))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",gid=")
 	switch {
+	case x.gid == ff_unspecified:
+		// skip
 	case x.gid == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "gid=keep")
 	case x.gid >= 0:
-		sb.WriteString(strconv.Itoa(x.gid))
+		hunks = append(hunks, "gid="+strconv.Itoa(x.gid))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",mtime=")
 	switch {
+	case x.mtime == ff_unspecified:
+		// skip
 	case x.mtime == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "mtime=keep")
 	case x.mtime >= 0:
-		sb.WriteByte('@')
-		sb.WriteString(strconv.FormatInt(x.mtime, 10))
+		hunks = append(hunks, "mtime=@"+strconv.FormatInt(x.mtime, 10))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",sticky=")
 	switch {
+	case x.sticky == ff_unspecified:
+		// skip
 	case x.sticky == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "sticky=keep")
 	case x.sticky == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "sticky=ignore")
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",setid=")
 	switch {
+	case x.setid == ff_unspecified:
+		// skip
 	case x.setid == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "setid=keep")
 	case x.setid == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "setid=ignore")
 	case x.setid == ff_reject:
-		sb.WriteString("reject")
+		hunks = append(hunks, "setid=reject")
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",dev=")
 	switch {
+	case x.dev == ff_unspecified:
+		// skip
 	case x.dev == ff_keep:
-		sb.WriteString("keep")
+		hunks = append(hunks, "dev=keep")
 	case x.dev == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "dev=ignore")
 	case x.dev == ff_reject:
-		sb.WriteString("reject")
+		hunks = append(hunks, "dev=reject")
 	default:
 		panic("invalid")
 	}
-	return sb.String()
+	return strings.Join(hunks, ",")
 }
 
 var FilesetPackFilter_AtlasEntry = atlas.BuildEntry(FilesetPackFilter{}).Transform().
@@ -190,19 +212,21 @@ func MustParseFilesetUnpackFilter(s string) FilesetUnpackFilter {
 	}
 	return ff
 }
-func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
-	alreadyEncountered := make(map[string]bool, 6)
+func ParseFilesetUnpackFilter(s string) (_ FilesetUnpackFilter, err error) {
+	ff := FilesetUnpackFilter{
+		ff_unspecified, ff_unspecified, ff_unspecified,
+		ff_unspecified, ff_unspecified, ff_unspecified,
+	}
 	for _, s := range strings.Split(s, ",") {
 		hunks := strings.SplitN(strings.TrimSpace(s), "=", 2)
 		if len(hunks) != 2 {
 			return ff, fmt.Errorf("fileset filter: invalid format: must be a comma-separated list of k=v pairs")
 		}
-		if alreadyEncountered[hunks[0]] == true {
-			return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
-		}
-		alreadyEncountered[hunks[0]] = true
 		switch hunks[0] {
 		case "uid":
+			if ff.uid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.uid = ff_follow
@@ -215,6 +239,9 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 				}
 			}
 		case "gid":
+			if ff.gid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.gid = ff_follow
@@ -227,6 +254,9 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 				}
 			}
 		case "mtime":
+			if ff.mtime != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.mtime = ff_follow
@@ -254,6 +284,9 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 				ff.mtime = t.Unix()
 			}
 		case "sticky":
+			if ff.sticky != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.sticky = ff_follow
@@ -263,6 +296,9 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 				return ff, fmt.Errorf("fileset filter: invalid option: sticky must be 'follow' or 'ignore'")
 			}
 		case "setid":
+			if ff.setid != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.setid = ff_follow
@@ -274,6 +310,9 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 				return ff, fmt.Errorf("fileset filter: invalid option: setid must be 'follow', 'ignore', or 'reject'")
 			}
 		case "dev":
+			if ff.dev != ff_unspecified {
+				return ff, fmt.Errorf("fileset filter: cannot specify the same option repeatedly")
+			}
 			switch hunks[1] {
 			case "follow":
 				ff.dev = ff_follow
@@ -292,73 +331,78 @@ func ParseFilesetUnpackFilter(s string) (ff FilesetUnpackFilter, err error) {
 }
 
 func (x FilesetUnpackFilter) String() (v string) {
-	var sb strings.Builder
-	sb.WriteString("uid=")
+	hunks := make([]string, 0, 6)
 	switch {
+	case x.uid == ff_unspecified:
+		// skip
 	case x.uid == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "uid=follow")
 	case x.uid == ff_context:
-		sb.WriteString("mine")
+		hunks = append(hunks, "uid=mine")
 	case x.uid >= 0:
-		sb.WriteString(strconv.Itoa(x.uid))
+		hunks = append(hunks, "uid="+strconv.Itoa(x.uid))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",gid=")
 	switch {
+	case x.gid == ff_unspecified:
+		// skip
 	case x.gid == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "gid=follow")
 	case x.gid == ff_context:
-		sb.WriteString("mine")
+		hunks = append(hunks, "gid=mine")
 	case x.gid >= 0:
-		sb.WriteString(strconv.Itoa(x.gid))
+		hunks = append(hunks, "gid="+strconv.Itoa(x.gid))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",mtime=")
 	switch {
+	case x.mtime == ff_unspecified:
+		// skip
 	case x.mtime == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "mtime=follow")
 	case x.mtime == ff_context:
-		sb.WriteString("now")
+		hunks = append(hunks, "mtime=now")
 	case x.mtime >= 0:
-		sb.WriteByte('@')
-		sb.WriteString(strconv.FormatInt(x.mtime, 10))
+		hunks = append(hunks, "mtime=@"+strconv.FormatInt(x.mtime, 10))
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",sticky=")
 	switch {
+	case x.sticky == ff_unspecified:
+		// skip
 	case x.sticky == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "sticky=follow")
 	case x.sticky == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "sticky=ignore")
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",setid=")
 	switch {
+	case x.setid == ff_unspecified:
+		// skip
 	case x.setid == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "setid=follow")
 	case x.setid == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "setid=ignore")
 	case x.setid == ff_reject:
-		sb.WriteString("reject")
+		hunks = append(hunks, "setid=reject")
 	default:
 		panic("invalid")
 	}
-	sb.WriteString(",dev=")
 	switch {
+	case x.dev == ff_unspecified:
+		// skip
 	case x.dev == ff_follow:
-		sb.WriteString("follow")
+		hunks = append(hunks, "dev=follow")
 	case x.dev == ff_ignore:
-		sb.WriteString("ignore")
+		hunks = append(hunks, "dev=ignore")
 	case x.dev == ff_reject:
-		sb.WriteString("reject")
+		hunks = append(hunks, "dev=reject")
 	default:
 		panic("invalid")
 	}
-	return sb.String()
+	return strings.Join(hunks, ",")
 }
 
 var FilesetUnpackFilter_AtlasEntry = atlas.BuildEntry(FilesetUnpackFilter{}).Transform().

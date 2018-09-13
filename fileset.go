@@ -40,11 +40,12 @@ var (
 var DefaultTime int64 = time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC).Unix()
 
 const (
-	ff_keep    = -2
-	ff_follow  = -2
-	ff_ignore  = -3
-	ff_reject  = -4 // if trying to figure out caching, can map this into "ignore".
-	ff_context = -5 // if trying to figure out caching, must map this into a real value.
+	ff_unspecified = -1 // means not configured.  serialize as such; cannot use, must stack with defaults first.
+	ff_keep        = -2
+	ff_follow      = -2
+	ff_ignore      = -3
+	ff_reject      = -4 // if trying to figure out caching, can map this into "ignore".
+	ff_context     = -5 // if trying to figure out caching, must map this into a real value.
 )
 
 func (ff FilesetPackFilter) Uid() (keep bool, setTo int) {

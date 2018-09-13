@@ -36,6 +36,11 @@ func TestFilesetFilterSerialization(t *testing.T) {
 			FilesetPackFilter_Flatten,
 			`"uid=1000,gid=1000,mtime=@1262304000,sticky=keep,setid=keep,dev=keep"`)
 	})
+	t.Run("pack partial specifications should roundtrip", func(t *testing.T) {
+		shouldRtPack(t,
+			FilesetPackFilter{ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
+			`"gid=1000,sticky=ignore"`)
+	})
 
 	atl = atlas.MustBuild(FilesetUnpackFilter_AtlasEntry)
 	shouldRtUnpack := func(t *testing.T, obj FilesetUnpackFilter, canon string) {
@@ -61,5 +66,10 @@ func TestFilesetFilterSerialization(t *testing.T) {
 		shouldRtUnpack(t,
 			FilesetUnpackFilter_LowPriv,
 			`"uid=mine,gid=mine,mtime=follow,sticky=follow,setid=reject,dev=reject"`)
+	})
+	t.Run("unpack partial specifications should roundtrip", func(t *testing.T) {
+		shouldRtUnpack(t,
+			FilesetUnpackFilter{ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
+			`"gid=1000,sticky=ignore"`)
 	})
 }
