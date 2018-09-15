@@ -69,9 +69,9 @@ func (ws WareSourcing) PivotToWareIDs(wareIDs map[WareID]struct{}) WareSourcing 
 
 // PivotToInputs is a shortcut for calling PivotToWareIDs with the set of
 // inputs to a bound Op.
-func (ws WareSourcing) PivotToInputs(boundOp BoundOperation) WareSourcing {
-	wareIDs := make(map[WareID]struct{}, len(boundOp.InputPins))
-	for _, wareID := range boundOp.InputPins {
+func (ws WareSourcing) PivotToInputs(frm Formula) WareSourcing {
+	wareIDs := make(map[WareID]struct{}, len(frm.Inputs))
+	for _, wareID := range frm.Inputs {
 		wareIDs[wareID] = struct{}{}
 	}
 	return ws.PivotToWareIDs(wareIDs)

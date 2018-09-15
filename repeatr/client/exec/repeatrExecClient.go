@@ -22,7 +22,7 @@ var _ repeatr.RunFunc = Run
 
 func Run(
 	ctx context.Context,
-	boundOp api.BoundOperation, // What formula to run.
+	boundOp api.Formula, // What formula to run.
 	wareSourcing api.WareSourcing, // Suggestions on where to get wares; note only the WareID index will be honored, so flip everything to that before calling.
 	wareStaging api.WareStaging, // Instructions on where to store output wares.
 	input repeatr.InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
@@ -143,25 +143,13 @@ func Run(
 
 type (
 	formulaPlus struct {
-		Formula formula
+		Formula api.Formula
 		Context formulaContext
-	}
-
-	formula struct {
-		Inputs  map[api.AbsPath]api.WareID
-		Action  api.OpAction // "coincidentally" identical to the modern spec so we can just reuse.
-		Outputs map[api.AbsPath]outputSpec
 	}
 
 	formulaContext struct {
 		FetchUrls map[api.AbsPath][]api.WarehouseLocation
 		SaveUrls  map[api.AbsPath]api.WarehouseLocation
-	}
-
-	outputSpec struct {
-		PackType api.PackType `refmt:"packtype"`
-
-		// filter support currently skipped.
 	}
 
 	event interface{}
@@ -197,9 +185,7 @@ type (
 
 var (
 	formulaPlus_AtlasEntry    = atlas.BuildEntry(formulaPlus{}).StructMap().Autogenerate().Complete()
-	formula_AtlasEntry        = atlas.BuildEntry(formula{}).StructMap().Autogenerate().Complete()
 	formulaContext_AtlasEntry = atlas.BuildEntry(formulaContext{}).StructMap().Autogenerate().Complete()
-	outputSpec_AtlasEntry     = atlas.BuildEntry(outputSpec{}).StructMap().Autogenerate().Complete()
 	event_AtlasEntry          = atlas.BuildEntry((*event)(nil)).KeyedUnion().Of(map[string]*atlas.AtlasEntry{
 		"result": event_Result_AtlasEntry,
 		"log":    event_Log_AtlasEntry,
@@ -217,10 +203,10 @@ var (
 
 var (
 	atl_formula = atlas.MustBuild(
+		api.Formula_AtlasEntry,
+		api.FormulaOutputSpec_AtlasEntry,
 		formulaPlus_AtlasEntry,
-		formula_AtlasEntry,
 		formulaContext_AtlasEntry,
-		outputSpec_AtlasEntry,
 		api.WareID_AtlasEntry,
 		api.OpAction_AtlasEntry,
 	)

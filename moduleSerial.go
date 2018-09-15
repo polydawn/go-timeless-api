@@ -10,8 +10,8 @@ var Atlas_Module = atlas.MustBuild(
 	Operation_AtlasEntry,
 	SlotRef_AtlasEntry,
 	ImportRef_AtlasEntry,
-	OpAction_AtlasEntry,
-	OpActionUserinfo_AtlasEntry,
+	FormulaAction_AtlasEntry,
+	FormulaUserinfo_AtlasEntry,
 )
 
 var Module_AtlasEntry = atlas.BuildEntry(Module{}).StructMap().Autogenerate().Complete()

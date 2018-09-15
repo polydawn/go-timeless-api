@@ -24,7 +24,7 @@ func TestPinning(t *testing.T) {
 					{"", "foo"}:  "/foo",
 					{"", "bar"}:  "/bar",
 				},
-				Action: OpAction{Exec: []string{"mv", "/foo/thinger", "/out/thinger"}},
+				Action: FormulaAction{Exec: []string{"mv", "/foo/thinger", "/out/thinger"}},
 				Outputs: map[SlotName]AbsPath{
 					"intermediate": "/out",
 				},
@@ -42,7 +42,7 @@ func TestPinning(t *testing.T) {
 							{"", "bar"}:    "/bar",
 							{"", "wodget"}: "/src",
 						},
-						Action: OpAction{Exec: []string{"/bar/tool", "/src", "/out/thinger"}},
+						Action: FormulaAction{Exec: []string{"/bar/tool", "/src", "/out/thinger"}},
 						Outputs: map[SlotName]AbsPath{
 							"intermediate": "/out",
 						},
@@ -55,7 +55,7 @@ func TestPinning(t *testing.T) {
 					{"", "base"}:        "/",
 					{"stepB", "barred"}: "/bar",
 				},
-				Action: OpAction{Exec: []string{"/bar/thinger"}},
+				Action: FormulaAction{Exec: []string{"/bar/thinger"}},
 				Outputs: map[SlotName]AbsPath{
 					"final": "/bar",
 				},
