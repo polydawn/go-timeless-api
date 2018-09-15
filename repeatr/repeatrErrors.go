@@ -1,6 +1,8 @@
 package repeatr
 
 import (
+	"github.com/warpfork/go-errcat"
+
 	"go.polydawn.net/go-timeless-api/rio"
 )
 
@@ -54,4 +56,42 @@ var ErrorTable = []struct {
 	{ExitCode: 42 /* */, RepeatrError: ErrExecutor},
 	// Numbers do a big jump as we get into "you really shouldn't see these" territory...
 	{ExitCode: 120 /**/, RepeatrError: ErrRPCBreakdown},
+}
+
+// ExitCodeForError translates an error into a numeric exit code, looking up
+// a code based on the errcat category of the error.
+func ExitCodeForError(err error) int {
+	if err == nil {
+		return 0
+	}
+	return ExitCodeForCategory(errcat.Category(err))
+}
+
+// ExitCodeForCategory translates an errcat category into a numeric exit code.
+func ExitCodeForCategory(category interface{}) int {
+	for _, row := range ErrorTable {
+		if category == row.RepeatrError {
+			return row.ExitCode
+		}
+	}
+	panic(errcat.Errorf(ErrRPCBreakdown, "no exit code mapping for error category %q", category))
+}
+
+// ReboxRioError is a utility function for flipping rio.ErrorCategory into
+// repeatr.ErrorCategory (or, returning ErrRPCBreakdown for unexpected cases).
+func ReboxRioError(err error) error {
+	category := errcat.Category(err)
+	switch cat2 := category.(type) {
+	case nil:
+		return nil
+	case rio.ErrorCategory:
+		for _, row := range ErrorTable {
+			if string(row.RepeatrError) == string(cat2) {
+				return errcat.Recategorize(row.RepeatrError, err)
+			}
+		}
+		return errcat.Errorf(ErrRPCBreakdown, "protocol error: unexpected error category %q from rio (error was: %s)", category, err)
+	default:
+		return errcat.Errorf(ErrRPCBreakdown, "protocol error: unexpected error category type %T from rio (error was: %s)", category, err)
+	}
 }
