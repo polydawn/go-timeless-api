@@ -135,8 +135,12 @@ const (
 )
 
 type FormulaRunRecord struct {
-	Guid     string             // random number, presumed globally unique.
-	Time     int64              // time at start of build.
-	ExitCode int                // exit code of the contained process.
-	Results  map[AbsPath]WareID // wares produced by the run!
+	Guid      string             `refmt:"guid"`      // random number, presumed globally unique.
+	FormulaID FormulaSetupHash   `refmt:"formulaID"` // HID of formula ran.
+	Time      int64              `refmt:"time"`      // time at start of build.
+	ExitCode  int                `refmt:"exitCode"`  // exit code of the contained process.
+	Results   map[AbsPath]WareID `refmt:"results"`   // wares produced by the run!
+
+	Hostname string            `refmt:",omitempty"` // Optional: hostname.  not a trusted field, but useful for debugging.
+	Metadata map[string]string `refmt:",omitempty"` // Optional: escape valve.  you can attach freetext here.
 }
