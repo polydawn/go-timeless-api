@@ -19,7 +19,6 @@ const (
 	ErrPackInvalid          = ErrorCategory("rio-pack-invalid")          // Indicates a pack could not be performed, perhaps because you tried to pack a file using a format that must start with dirs, or because of permission errors or other misfortunes during the pack.
 	ErrInoperablePath       = ErrorCategory("rio-inoperable-path")       // Indicates pack or unpack failed while reading or writing the target local filesystem path (permissions errors, etc, are likely causes).
 	ErrFilterRejection      = ErrorCategory("rio-filter-rejection")      // Indicates filters rejected some part of a fileset, e.g. `rio pack tar /dev --filter dev=reject` will return this error.
-	ErrNotImplemented       = ErrorCategory("rio-not-implemented")       // The operation is not implemented, PRs welcome
 	ErrRPCBreakdown         = ErrorCategory("rio-rpc-breakdown")         // Raised when running a remote rio process and the control channel is lost, the process fails to start, or unrecognized messages are received.
 )
 
@@ -40,7 +39,6 @@ var ErrorTable = []struct {
 	{ExitCode: 11 /* */, RioError: ErrPackInvalid},
 	{ExitCode: 12 /* */, RioError: ErrInoperablePath},
 	{ExitCode: 13 /* */, RioError: ErrFilterRejection},
-	{ExitCode: 110 /**/, RioError: ErrNotImplemented},
 	{ExitCode: 120 /**/, RioError: ErrRPCBreakdown},
 }
 
