@@ -18,9 +18,15 @@ type Operation struct {
 	Outputs map[SlotName]AbsPath `refmt:",omitempty"`
 }
 
+/*
+	OperationRecord is mostly an alias of FormulaRunRecord, but with Results
+	indexed by SlotName from the Operation rather than path in the Formula.
+
+	We usually serialize FormulaRunRecord, because it's more convergent when
+	content-addressed; OperationRecord contains immaterial details (e.g. the
+	SlotName).  OperationRecord is sometimes more convenient to use internally.
+*/
 type OperationRecord struct {
-	Guid     string              // random number, presumed globally unique.
-	Time     int64               // time at start of build.
-	ExitCode int                 // exit code of the contained process.
-	Results  map[SlotName]WareID // wares produced by the run!
+	FormulaRunRecord
+	Results map[SlotName]WareID
 }

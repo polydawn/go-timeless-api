@@ -12,7 +12,6 @@ import (
 	"github.com/polydawn/refmt"
 	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/obj/atlas"
-	"github.com/polydawn/refmt/obj/atlas/common"
 
 	"go.polydawn.net/go-timeless-api"
 	"go.polydawn.net/go-timeless-api/repeatr"
@@ -22,46 +21,14 @@ var _ repeatr.RunFunc = Run
 
 func Run(
 	ctx context.Context,
-	boundOp api.Formula, // What formula to run.
-	wareSourcing api.WareSourcing, // Suggestions on where to get wares; note only the WareID index will be honored, so flip everything to that before calling.
-	wareStaging api.WareStaging, // Instructions on where to store output wares.
+	frm api.Formula, // What formula to run.
+	frmCtx repeatr.FormulaContext, // Additional information required to run (e.g. fetch and save warehouse addrs).
 	input repeatr.InputControl, // Optionally: input control.  The zero struct is no input (which is fine).
 	monitor repeatr.Monitor, // Optionally: callbacks for progress monitoring.  Also where stdout/stderr is gathered.
-) (record *api.OperationRecord, err error) {
-	// traverse operation, flipping inputs and outputs to legacy format
-	frm := formula{
-		Inputs:  make(map[api.AbsPath]api.WareID),
-		Action:  boundOp.Action,
-		Outputs: make(map[api.AbsPath]outputSpec),
-	}
-	for slotRef, pth := range boundOp.Inputs {
-		frm.Inputs[pth] = boundOp.InputPins[slotRef]
-		if frm.Inputs[pth] == (api.WareID{}) {
-			panic("missing pins in op")
-		}
-	}
-	outputReverseMap := map[api.AbsPath]api.SlotName{}
-	for slotName, pth := range boundOp.Outputs {
-		frm.Outputs[pth] = outputSpec{"tar"}
-		outputReverseMap[pth] = slotName
-	}
-
-	// traverse operation, convert wareSourcing to formulaContext
-	//  (formulaContext will be deprecated and eventually replaced with wareSourcing)
-	frmCtx := formulaContext{
-		FetchUrls: make(map[api.AbsPath][]api.WarehouseLocation),
-		SaveUrls:  make(map[api.AbsPath]api.WarehouseLocation),
-	}
-	for slotRef, pth := range boundOp.Inputs {
-		frmCtx.FetchUrls[pth] = wareSourcing.ByWare[boundOp.InputPins[slotRef]]
-	}
-	for _, pth := range boundOp.Outputs {
-		frmCtx.SaveUrls[pth] = wareStaging.ByPackType[frm.Outputs[pth].PackType]
-	}
-
-	// flip all those into formulaPlus, serialize to buffer
+) (record *api.FormulaRunRecord, err error) {
+	// Organize all the task specs into formulaPlus, serialize to buffer
 	frmPlus := formulaPlus{frm, frmCtx}
-	frmPlusBytes, err := refmt.MarshalAtlased(json.EncodeOptions{}, frmPlus, atl_formula)
+	frmPlusBytes, err := refmt.MarshalAtlased(json.EncodeOptions{}, frmPlus, atl_formulaPlus)
 	if err != nil {
 		panic(err)
 	}
@@ -95,8 +62,8 @@ func Run(
 	//  msgSlot will hold the final data (or error); we'll return it at the end.
 	//  (We're relying on the child proc getting signal'd to close the stdout pipe
 	//  and in turn release us here in case of ctx.done.)
-	unmarshaller := refmt.NewUnmarshallerAtlased(json.DecodeOptions{}, stdout, atl_rpc)
-	var msgSlot event
+	unmarshaller := refmt.NewUnmarshallerAtlased(json.DecodeOptions{}, stdout, repeatr.Atlas)
+	var msgSlot repeatr.Event
 	for {
 		// Peel off a message.
 		if err := unmarshaller.Unmarshal(&msgSlot); err != nil {
@@ -115,26 +82,14 @@ func Run(
 
 		// Handle it based on type.
 		switch msg := msgSlot.(type) {
-		case event_Result: // Result messages are the last ones.  Process and break.
-			if msg.Error != nil {
-				record, err = nil, err
-			} else {
-				record, err = &api.OperationRecord{}, nil
-				record.Guid = msg.Record.Guid
-				record.Time = msg.Record.Time
-				record.ExitCode = msg.Record.ExitCode
-				record.Results = make(map[api.SlotName]api.WareID)
-				for pth, wareID := range msg.Record.Results {
-					record.Results[outputReverseMap[pth]] = wareID
-				}
-			}
-			monitor.Send(repeatr.Event_Result{record, err})
+		case repeatr.Event_Result: // Result messages are the last ones.  Process and break.
+			monitor.Send(msg)
 			cmd.Wait()
-			return
-		case event_Log:
-			monitor.Send(repeatr.Event_Log(msg))
-		case event_Output:
-			monitor.Send(repeatr.Event_Output(msg))
+			return msg.Record, msg.Error
+		case repeatr.Event_Log:
+			monitor.Send(msg)
+		case repeatr.Event_Output:
+			monitor.Send(msg)
 		default:
 			panic(fmt.Errorf("unhandled message type %T", msg))
 		}
@@ -142,78 +97,24 @@ func Run(
 }
 
 type (
+	// formulaPlus is the concatenation of a formula and its context, and is
+	// useful to serialize both {the thing to do} and {what you need to do it}
+	// for sending to a repeatr process as one complete message.
 	formulaPlus struct {
 		Formula api.Formula
-		Context formulaContext
-	}
-
-	formulaContext struct {
-		FetchUrls map[api.AbsPath][]api.WarehouseLocation
-		SaveUrls  map[api.AbsPath]api.WarehouseLocation
-	}
-
-	event interface{}
-
-	event_Result struct {
-		Record *runRecord `refmt:"runRecord,omitEmpty"`
-		Error  error      `refmt:",omitEmpty"`
-	}
-
-	event_Log struct {
-		Time   time.Time   `refmt:"t"`
-		Level  byte        `refmt:"lvl"`
-		Msg    string      `refmt:"msg"`
-		Detail [][2]string `refmt:"detail,omitempty"`
-	}
-
-	// Output from the contained process (stdout/stderr conjoined).
-	// Stderr/stdout are conjoined so their ordering does not slip.
-	// There is no guarantee of buffering (especially not line buffering);
-	// in other words, `printch('.')` may indeed flush.
-	event_Output struct {
-		Time time.Time `refmt:"t"`
-		Msg  string    `refmt:"msg"`
-	}
-
-	runRecord struct {
-		Guid     string                     // random number, presumed globally unique.
-		Time     int64                      // time at start of build.
-		ExitCode int                        // exit code of the contained process.
-		Results  map[api.AbsPath]api.WareID // wares produced by the run!
+		Context repeatr.FormulaContext
 	}
 )
 
 var (
-	formulaPlus_AtlasEntry    = atlas.BuildEntry(formulaPlus{}).StructMap().Autogenerate().Complete()
-	formulaContext_AtlasEntry = atlas.BuildEntry(formulaContext{}).StructMap().Autogenerate().Complete()
-	event_AtlasEntry          = atlas.BuildEntry((*event)(nil)).KeyedUnion().Of(map[string]*atlas.AtlasEntry{
-		"result": event_Result_AtlasEntry,
-		"log":    event_Log_AtlasEntry,
-		"txt":    event_Output_AtlasEntry,
-	})
-	event_Result_AtlasEntry = atlas.BuildEntry(event_Result{}).StructMap().Autogenerate().Complete()
-	event_Log_AtlasEntry    = atlas.BuildEntry(event_Log{}).StructMap().Autogenerate().Complete()
-	event_Output_AtlasEntry = atlas.BuildEntry(event_Output{}).StructMap().Autogenerate().Complete()
-	runRecord_AtlasEntry    = atlas.BuildEntry(runRecord{}).StructMap().
-				Autogenerate().
-				IgnoreKey("formulaID").
-				IgnoreKey("hostname").
-				Complete()
-)
+	formulaPlus_AtlasEntry = atlas.BuildEntry(formulaPlus{}).StructMap().Autogenerate().Complete()
 
-var (
-	atl_formula = atlas.MustBuild(
-		api.Formula_AtlasEntry,
-		api.FormulaOutputSpec_AtlasEntry,
+	atl_formulaPlus = atlas.MustBuild(
 		formulaPlus_AtlasEntry,
-		formulaContext_AtlasEntry,
-		api.WareID_AtlasEntry,
-		api.OpAction_AtlasEntry,
-	)
-	atl_rpc = atlas.MustBuild(
-		runRecord_AtlasEntry,
-		event_AtlasEntry,
-		commonatlases.Time_AsUnixInt,
-		api.WareID_AtlasEntry,
+		api.Formula_AtlasEntry,
+		api.FilesetPackFilter_AtlasEntry,
+		api.FormulaAction_AtlasEntry,
+		api.FormulaUserinfo_AtlasEntry,
+		api.FormulaOutputSpec_AtlasEntry,
 	)
 )

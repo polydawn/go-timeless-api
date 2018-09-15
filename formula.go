@@ -133,3 +133,10 @@ const (
 	*/
 	FormulaPolicy_Sysad FormulaPolicy = "sysad"
 )
+
+type FormulaRunRecord struct {
+	Guid     string             // random number, presumed globally unique.
+	Time     int64              // time at start of build.
+	ExitCode int                // exit code of the contained process.
+	Results  map[AbsPath]WareID // wares produced by the run!
+}

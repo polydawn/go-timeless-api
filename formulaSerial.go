@@ -7,4 +7,5 @@ var (
 	FormulaOutputSpec_AtlasEntry = atlas.BuildEntry(FormulaOutputSpec{}).StructMap().Autogenerate().Complete()
 	FormulaAction_AtlasEntry     = atlas.BuildEntry(FormulaAction{}).StructMap().Autogenerate().Complete()
 	FormulaUserinfo_AtlasEntry   = atlas.BuildEntry(FormulaUserinfo{}).StructMap().Autogenerate().Complete()
+	FormulaRunRecord_AtlasEntry  = atlas.BuildEntry(FormulaRunRecord{}).StructMap().Autogenerate().Complete()
 )
