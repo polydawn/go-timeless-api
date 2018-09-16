@@ -16,6 +16,8 @@ var Atlas = atlas.MustBuild(
 	api.WareID_AtlasEntry,
 )
 
+var FormulaContext_AtlasEntry = atlas.BuildEntry(FormulaContext{}).StructMap().Autogenerate().Complete()
+
 var Event_AtlasEntry = atlas.BuildEntry((*Event)(nil)).KeyedUnion().
 	Of(map[string]*atlas.AtlasEntry{
 		"log":    Event_Log_AtlasEntry,
