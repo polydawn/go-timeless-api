@@ -17,7 +17,7 @@ func MustParseFilesetPackFilter(s string) FilesetPackFilter {
 	return ff
 }
 func ParseFilesetPackFilter(s string) (_ FilesetPackFilter, err error) {
-	ff := FilesetPackFilter{
+	ff := FilesetPackFilter{true,
 		ff_unspecified, ff_unspecified, ff_unspecified,
 		ff_unspecified, ff_unspecified, ff_unspecified,
 	}
@@ -132,6 +132,9 @@ func ParseFilesetPackFilter(s string) (_ FilesetPackFilter, err error) {
 }
 
 func (x FilesetPackFilter) String() (v string) {
+	if x.initialized == false {
+		return ""
+	}
 	hunks := make([]string, 0, 6)
 	switch {
 	case x.uid == ff_unspecified:
@@ -216,7 +219,7 @@ func MustParseFilesetUnpackFilter(s string) FilesetUnpackFilter {
 	return ff
 }
 func ParseFilesetUnpackFilter(s string) (_ FilesetUnpackFilter, err error) {
-	ff := FilesetUnpackFilter{
+	ff := FilesetUnpackFilter{true,
 		ff_unspecified, ff_unspecified, ff_unspecified,
 		ff_unspecified, ff_unspecified, ff_unspecified,
 	}
@@ -337,6 +340,9 @@ func ParseFilesetUnpackFilter(s string) (_ FilesetUnpackFilter, err error) {
 }
 
 func (x FilesetUnpackFilter) String() (v string) {
+	if x.initialized == false {
+		return ""
+	}
 	hunks := make([]string, 0, 6)
 	switch {
 	case x.uid == ff_unspecified:

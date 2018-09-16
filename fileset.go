@@ -9,30 +9,32 @@ import (
 //   is a struct describing the same properties that these filters modify.
 
 type FilesetPackFilter struct {
-	uid    int   // keep, [int]
-	gid    int   // keep, [int]
-	mtime  int64 // keep, [value] // we *could* support a 'now' mode, but we're all about discouraging that kind of nonsense in the fileset.
-	sticky int   // keep, ignore // i don't actually know why you'd ever want to zero out a sticky bit, but it's here for completeness.
-	setid  int   // keep, ignore, reject
-	dev    int   // keep, ignore, reject
+	initialized bool  // force the zero value of this struct to be obviously initialized
+	uid         int   // keep, [int]
+	gid         int   // keep, [int]
+	mtime       int64 // keep, [value] // we *could* support a 'now' mode, but we're all about discouraging that kind of nonsense in the fileset.
+	sticky      int   // keep, ignore // i don't actually know why you'd ever want to zero out a sticky bit, but it's here for completeness.
+	setid       int   // keep, ignore, reject
+	dev         int   // keep, ignore, reject
 }
 
 type FilesetUnpackFilter struct {
-	uid    int   // follow, mine, [int]
-	gid    int   // follow, mine, [int]
-	mtime  int64 // follow, now, [value]
-	sticky int   // follow, ignore
-	setid  int   // follow, ignore, reject
-	dev    int   // follow, ignore, reject
+	initialized bool  // force the zero value of this struct to be obviously initialized
+	uid         int   // follow, mine, [int]
+	gid         int   // follow, mine, [int]
+	mtime       int64 // follow, now, [value]
+	sticky      int   // follow, ignore
+	setid       int   // follow, ignore, reject
+	dev         int   // follow, ignore, reject
 }
 
 var (
-	FilesetPackFilter_Lossless     = FilesetPackFilter{ff_keep, ff_keep, ff_keep, ff_keep, ff_keep, ff_keep}   // The default filters on... nothing, really.
-	FilesetPackFilter_Flatten      = FilesetPackFilter{1000, 1000, DefaultTime, ff_keep, ff_keep, ff_keep}     // The default filters on repeatr outputs.
-	FilesetPackFilter_Conservative = FilesetPackFilter{1000, 1000, DefaultTime, ff_keep, ff_reject, ff_reject} // The default filters on rio pack.  Guides you away from anything that would require privs to unpack again.
+	FilesetPackFilter_Lossless     = FilesetPackFilter{true, ff_keep, ff_keep, ff_keep, ff_keep, ff_keep, ff_keep}   // The default filters on... nothing, really.
+	FilesetPackFilter_Flatten      = FilesetPackFilter{true, 1000, 1000, DefaultTime, ff_keep, ff_keep, ff_keep}     // The default filters on repeatr outputs.
+	FilesetPackFilter_Conservative = FilesetPackFilter{true, 1000, 1000, DefaultTime, ff_keep, ff_reject, ff_reject} // The default filters on rio pack.  Guides you away from anything that would require privs to unpack again.
 
-	FilesetUnpackFilter_Lossless = FilesetUnpackFilter{ff_follow, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow}   // The default filters on repeatr inputs.
-	FilesetUnpackFilter_LowPriv  = FilesetUnpackFilter{ff_context, ff_context, ff_follow, ff_follow, ff_reject, ff_reject} // The default filters on rio unpack.
+	FilesetUnpackFilter_Lossless = FilesetUnpackFilter{true, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow}   // The default filters on repeatr inputs.
+	FilesetUnpackFilter_LowPriv  = FilesetUnpackFilter{true, ff_context, ff_context, ff_follow, ff_follow, ff_reject, ff_reject} // The default filters on rio unpack.
 
 	// note that the 'ignore' modes are never used in any of our common defaults.  they're only there for the user realizes they want them and require opt in.
 )
@@ -49,14 +51,22 @@ const (
 )
 
 func (ff FilesetPackFilter) IsComplete() bool {
-	return !(ff.uid == ff_unspecified ||
-		ff.gid == ff_unspecified ||
-		ff.mtime == ff_unspecified ||
-		ff.sticky == ff_unspecified ||
-		ff.setid == ff_unspecified ||
-		ff.dev == ff_unspecified)
+	return ff.initialized &&
+		ff.uid != ff_unspecified &&
+		ff.gid != ff_unspecified &&
+		ff.mtime != ff_unspecified &&
+		ff.sticky != ff_unspecified &&
+		ff.setid != ff_unspecified &&
+		ff.dev != ff_unspecified
 }
 func (ff FilesetPackFilter) Apply(ff2 FilesetPackFilter) FilesetPackFilter {
+	if ff.initialized == false {
+		return ff2
+	}
+	if ff2.initialized == false {
+		return ff
+	}
+	ff.initialized = true
 	if ff.uid == ff_unspecified {
 		ff.uid = ff2.uid
 	}
@@ -100,14 +110,22 @@ func (ff FilesetPackFilter) Dev() (keep bool, reject bool) {
 }
 
 func (ff FilesetUnpackFilter) IsComplete() bool {
-	return !(ff.uid == ff_unspecified ||
-		ff.gid == ff_unspecified ||
-		ff.mtime == ff_unspecified ||
-		ff.sticky == ff_unspecified ||
-		ff.setid == ff_unspecified ||
-		ff.dev == ff_unspecified)
+	return ff.initialized &&
+		ff.uid != ff_unspecified &&
+		ff.gid != ff_unspecified &&
+		ff.mtime != ff_unspecified &&
+		ff.sticky != ff_unspecified &&
+		ff.setid != ff_unspecified &&
+		ff.dev != ff_unspecified
 }
 func (ff FilesetUnpackFilter) Apply(ff2 FilesetUnpackFilter) FilesetUnpackFilter {
+	if ff.initialized == false {
+		return ff2
+	}
+	if ff2.initialized == false {
+		return ff
+	}
+	ff.initialized = true
 	if ff.uid == ff_unspecified {
 		ff.uid = ff2.uid
 	}

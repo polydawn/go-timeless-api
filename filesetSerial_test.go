@@ -38,7 +38,7 @@ func TestFilesetFilterSerialization(t *testing.T) {
 	})
 	t.Run("pack partial specifications should roundtrip", func(t *testing.T) {
 		shouldRtPack(t,
-			FilesetPackFilter{ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
+			FilesetPackFilter{true, ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
 			`"gid=1000,sticky=ignore"`)
 	})
 
@@ -69,7 +69,7 @@ func TestFilesetFilterSerialization(t *testing.T) {
 	})
 	t.Run("unpack partial specifications should roundtrip", func(t *testing.T) {
 		shouldRtUnpack(t,
-			FilesetUnpackFilter{ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
+			FilesetUnpackFilter{true, ff_unspecified, 1000, ff_unspecified, ff_ignore, ff_unspecified, ff_unspecified},
 			`"gid=1000,sticky=ignore"`)
 	})
 }
