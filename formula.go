@@ -136,8 +136,8 @@ const (
 
 type FormulaRunRecord struct {
 	Guid      string             `refmt:"guid"`      // random number, presumed globally unique.
-	FormulaID FormulaSetupHash   `refmt:"formulaID"` // HID of formula ran.
 	Time      int64              `refmt:"time"`      // time at start of build.
+	FormulaID FormulaSetupHash   `refmt:"formulaID"` // HID of formula ran.
 	ExitCode  int                `refmt:"exitCode"`  // exit code of the contained process.
 	Results   map[AbsPath]WareID `refmt:"results"`   // wares produced by the run!
 
