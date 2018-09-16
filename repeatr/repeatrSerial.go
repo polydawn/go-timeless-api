@@ -2,6 +2,7 @@ package repeatr
 
 import (
 	"github.com/polydawn/refmt/obj/atlas"
+	"github.com/polydawn/refmt/obj/atlas/common"
 
 	"go.polydawn.net/go-timeless-api"
 )
@@ -10,6 +11,7 @@ import (
 // and also includes event/log serialization.
 var Atlas = atlas.MustBuild(
 	Event_AtlasEntry,
+	commonatlases.Time_AsUnixInt,
 	api.FormulaRunRecord_AtlasEntry,
 	api.WareID_AtlasEntry,
 )

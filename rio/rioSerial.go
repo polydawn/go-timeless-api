@@ -2,19 +2,21 @@ package rio
 
 import (
 	"github.com/polydawn/refmt/obj/atlas"
+	"github.com/polydawn/refmt/obj/atlas/common"
 
 	"go.polydawn.net/go-timeless-api"
 )
 
 var Atlas = atlas.MustBuild(
 	Event_AtlasEntry,
+	commonatlases.Time_AsUnixInt,
 	api.WareID_AtlasEntry,
 )
 
 var Event_AtlasEntry = atlas.BuildEntry((*Event)(nil)).KeyedUnion().
 	Of(map[string]*atlas.AtlasEntry{
 		"log":    Event_Log_AtlasEntry,
-		"porg":   Event_Progress_AtlasEntry,
+		"prog":   Event_Progress_AtlasEntry,
 		"result": Event_Result_AtlasEntry,
 	})
 
