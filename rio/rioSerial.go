@@ -9,6 +9,7 @@ import (
 
 var Atlas = atlas.MustBuild(
 	Event_AtlasEntry,
+	Error_AtlasEntry,
 	commonatlases.Time_AsUnixInt,
 	api.WareID_AtlasEntry,
 )
@@ -23,6 +24,8 @@ var Event_AtlasEntry = atlas.BuildEntry((*Event)(nil)).KeyedUnion().
 var Event_Log_AtlasEntry = atlas.BuildEntry(Event_Log{}).StructMap().Autogenerate().Complete()
 var Event_Progress_AtlasEntry = atlas.BuildEntry(Event_Progress{}).StructMap().Autogenerate().Complete()
 var Event_Result_AtlasEntry = atlas.BuildEntry(Event_Result{}).StructMap().Autogenerate().Complete()
+
+var Error_AtlasEntry = atlas.BuildEntry(Error{}).StructMap().Autogenerate().Complete()
 
 func (ll LogLevel) String() string {
 	switch ll {

@@ -8,6 +8,20 @@ import (
 
 type ErrorCategory string
 
+// Error implements the errcat.Error interface, specifically using
+// this package's ErrorCategory as the concrete category,
+// and giving us a type to hang custom serialization on.
+type Error struct {
+	Category_ ErrorCategory     `json:"category"          refmt:"category"`
+	Message_  string            `json:"message"           refmt:"message"`
+	Details_  map[string]string `json:"details,omitempty" refmt:"details,omitempty"`
+}
+
+func (e *Error) Category() interface{}      { return e.Category_ }
+func (e *Error) Message() string            { return e.Message_ }
+func (e *Error) Details() map[string]string { return e.Details_ }
+func (e *Error) Error() string              { return e.Message_ }
+
 const (
 	ErrUsage                = ErrorCategory("repeatr-usage-error")         // Indicates some piece of user input to a command was invalid and unrunnable.
 	ErrWarehouseUnavailable = ErrorCategory(rio.ErrWarehouseUnavailable)   // The corresponding rio error halted execution.
@@ -56,6 +70,22 @@ var ErrorTable = []struct {
 	{ExitCode: 42 /* */, RepeatrError: ErrExecutor},
 	// Numbers do a big jump as we get into "you really shouldn't see these" territory...
 	{ExitCode: 120 /**/, RepeatrError: ErrRPCBreakdown},
+}
+
+// ToError converts any arbitrary error into the concrete rio.Error type.
+// If it's an errcat.Error and already has a rio.ErrorCategory, this is
+// lossless; if it's some other kind of error, we'll panic.
+func ToError(err error) *Error {
+	if err == nil {
+		return nil
+	}
+	errcat.RequireErrorHasCategoryOrPanic(&err, ErrorCategory(""))
+	ec := err.(errcat.Error)
+	return &Error{
+		ec.Category().(ErrorCategory),
+		ec.Message(),
+		ec.Details(),
+	}
 }
 
 // ExitCodeForError translates an error into a numeric exit code, looking up

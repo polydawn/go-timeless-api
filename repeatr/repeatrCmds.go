@@ -83,7 +83,7 @@ type (
 	// Final results.  (Also converted into returns.)
 	Event_Result struct {
 		Record *api.FormulaRunRecord `refmt:"runRecord,omitempty"`
-		Error  error                 `refmt:",omitempty"`
+		Error  *Error                `refmt:",omitempty"`
 	}
 )
 
