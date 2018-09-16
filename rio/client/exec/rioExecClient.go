@@ -108,7 +108,7 @@ func packOrUnpack(
 				if waitRes == nil {
 					waitRes = fmt.Errorf("bizarre zero exit code")
 				}
-				return api.WareID{}, fmt.Errorf("fork rio: unexpected halt: %s", err)
+				return api.WareID{}, fmt.Errorf("fork rio: unexpected halt: %s", waitRes)
 			}
 			return api.WareID{}, fmt.Errorf("fork rio: API parse error: %s", err)
 		}

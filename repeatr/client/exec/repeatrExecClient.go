@@ -75,7 +75,7 @@ func Run(
 				if waitRes == nil {
 					waitRes = fmt.Errorf("bizarre zero exit code")
 				}
-				return nil, fmt.Errorf("fork repeatr: unexpected halt: %s", err)
+				return nil, fmt.Errorf("fork repeatr: unexpected halt: %s", waitRes)
 			}
 			return nil, fmt.Errorf("fork repeatr: API parse error: %s", err)
 		}
