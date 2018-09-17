@@ -117,6 +117,6 @@ var (
 		api.FormulaUserinfo_AtlasEntry,
 		api.FormulaOutputSpec_AtlasEntry,
 		api.WareID_AtlasEntry,
-		api.FormulaContext_AtlasEntry,
+		repeatr.FormulaContext_AtlasEntry,
 	)
 )
