@@ -17,10 +17,10 @@ type Error struct {
 	Details_  map[string]string `json:"details,omitempty" refmt:"details,omitempty"`
 }
 
-func (e *Error) Category() interface{}      { return e.Category_ }
-func (e *Error) Message() string            { return e.Message_ }
-func (e *Error) Details() map[string]string { return e.Details_ }
-func (e *Error) Error() string              { return e.Message_ }
+func (e Error) Category() interface{}      { return e.Category_ }
+func (e Error) Message() string            { return e.Message_ }
+func (e Error) Details() map[string]string { return e.Details_ }
+func (e Error) Error() string              { return e.Message_ }
 
 const (
 	ErrUsage                = ErrorCategory("repeatr-usage-error")         // Indicates some piece of user input to a command was invalid and unrunnable.
