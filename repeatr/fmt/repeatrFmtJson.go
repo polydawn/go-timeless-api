@@ -22,21 +22,24 @@ var jsonPrettyOptions = json.EncodeOptions{
 }
 
 func (p JsonPrinter) PrintLog(evt repeatr.Event_Log) {
-	if err := json.NewMarshallerAtlased(p.stdout, json.EncodeOptions{}, repeatr.Atlas).Marshal(evt); err != nil {
+	box := repeatr.Event(evt)
+	if err := json.NewMarshallerAtlased(p.stdout, json.EncodeOptions{}, repeatr.Atlas).Marshal(&box); err != nil {
 		panic(err)
 	}
 	p.stdout.Write([]byte{'\n'})
 }
 
 func (p JsonPrinter) PrintOutput(evt repeatr.Event_Output) {
-	if err := json.NewMarshallerAtlased(p.stdout, json.EncodeOptions{}, repeatr.Atlas).Marshal(evt); err != nil {
+	box := repeatr.Event(evt)
+	if err := json.NewMarshallerAtlased(p.stdout, json.EncodeOptions{}, repeatr.Atlas).Marshal(&box); err != nil {
 		panic(err)
 	}
 	p.stdout.Write([]byte{'\n'})
 }
 
 func (p JsonPrinter) PrintResult(evt repeatr.Event_Result) {
-	if err := json.NewMarshallerAtlased(p.stdout, jsonPrettyOptions, repeatr.Atlas).Marshal(evt); err != nil {
+	box := repeatr.Event(evt)
+	if err := json.NewMarshallerAtlased(p.stdout, jsonPrettyOptions, repeatr.Atlas).Marshal(&box); err != nil {
 		panic(err)
 	}
 	p.stdout.Write([]byte{'\n'})
