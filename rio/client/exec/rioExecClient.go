@@ -118,6 +118,12 @@ func packOrUnpack(
 		case rio.Event_Result: // Result messages are the last ones.  Process and break.
 			monitor.Send(msg)
 			cmd.Wait()
+			// Be careful not to return an irritating typed-nil.
+			//  (msg.Error has a concrete type, and we return an interface,
+			//   so this is something we have to watch out for.)
+			if msg.Error == nil {
+				return msg.WareID, nil
+			}
 			return msg.WareID, msg.Error
 		case rio.Event_Log:
 			monitor.Send(msg)
