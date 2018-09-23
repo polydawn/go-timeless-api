@@ -33,8 +33,9 @@ var (
 	FilesetPackFilter_Flatten      = FilesetPackFilter{true, 1000, 1000, DefaultTime, ff_keep, ff_keep, ff_keep}     // The default filters on repeatr outputs.
 	FilesetPackFilter_Conservative = FilesetPackFilter{true, 1000, 1000, DefaultTime, ff_keep, ff_reject, ff_reject} // The default filters on rio pack.  Guides you away from anything that would require privs to unpack again.
 
-	FilesetUnpackFilter_Lossless = FilesetUnpackFilter{true, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow}   // The default filters on repeatr inputs.
-	FilesetUnpackFilter_LowPriv  = FilesetUnpackFilter{true, ff_context, ff_context, ff_follow, ff_follow, ff_reject, ff_reject} // The default filters on rio unpack.
+	FilesetUnpackFilter_Lossless     = FilesetUnpackFilter{true, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow, ff_follow}   // The default filters on repeatr inputs.  Follow all instructions, even dev and setid.
+	FilesetUnpackFilter_Conservative = FilesetUnpackFilter{true, ff_follow, ff_follow, ff_follow, ff_follow, ff_reject, ff_reject}   // The default filters on rio scan.  Follow all instructions, but halt on dev and setid (make the user aware if they're ingesting those).
+	FilesetUnpackFilter_LowPriv      = FilesetUnpackFilter{true, ff_context, ff_context, ff_follow, ff_follow, ff_reject, ff_reject} // The default filters on rio unpack.  Operate lossily (replace uid and gid with the current user's) so that we can run with low privileges.
 
 	// note that the 'ignore' modes are never used in any of our common defaults.  they're only there for the user realizes they want them and require opt in.
 )
