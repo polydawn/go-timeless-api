@@ -20,7 +20,7 @@ func UnpackArgs(
 	//  (We could just pass 'em all even when emptystr, but let's be nice to readers of 'ps'.)
 	filtStr := filt.String()
 	if filtStr != "" {
-		args = append(args, "--filter", filtStr)
+		args = append(args, "--filters", filtStr)
 	}
 
 	// Append placement mode if specified.
@@ -61,7 +61,7 @@ func PackArgs(
 	//  (We could just pass 'em all even when emptystr, but let's be nice to readers of 'ps'.)
 	filtStr := filt.String()
 	if filtStr != "" {
-		args = append(args, "--filter", filtStr)
+		args = append(args, "--filters", filtStr)
 	}
 
 	// Append warehouse.

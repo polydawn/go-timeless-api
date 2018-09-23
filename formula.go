@@ -9,7 +9,7 @@ type (
 
 	FormulaOutputSpec struct {
 		PackType PackType          `refmt:"packtype"`
-		Filter   FilesetPackFilter `refmt:"filter",omitempty`
+		Filter   FilesetPackFilter `refmt:"filters",omitempty`
 	}
 
 	// FormulaAction defines the action to perform to "evaluate" the formula --
