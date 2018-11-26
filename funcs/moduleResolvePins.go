@@ -3,6 +3,8 @@ package funcs
 import (
 	"context"
 
+	"github.com/warpfork/go-errcat"
+
 	"go.polydawn.net/go-timeless-api"
 	"go.polydawn.net/go-timeless-api/hitch"
 	"go.polydawn.net/go-timeless-api/ingest"
@@ -51,7 +53,12 @@ func ResolvePins(
 			r[api.SubmoduleSlotRef{"", api.SlotRef{"", slotName}}] = *wareID
 			modWs, err := viewWarehousesTool(context.TODO(), impRef2.ModuleName)
 			if err != nil {
-				return nil, nil, err
+				switch errcat.Category(err) {
+				case hitch.ErrNoSuchCatalog:
+					modWs = &api.WareSourcing{}
+				default:
+					return nil, nil, err
+				}
 			}
 			ws.Append(modWs.PivotToModuleWare(*wareID, impRef2.ModuleName))
 		case api.ImportRef_Parent:
