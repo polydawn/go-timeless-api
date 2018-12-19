@@ -50,7 +50,7 @@ func RunOperation(
 		Action:  op.Action,
 		Outputs: make(map[api.AbsPath]api.FormulaOutputSpec, len(op.Outputs)),
 	}
-	for slotRef, pth := range op.Inputs {
+	for pth, slotRef := range op.Inputs {
 		pin, ok := scope[slotRef]
 		if !ok {
 			return nil, fmt.Errorf("cannot provide an input ware for slotref %q: no such ref in scope", slotRef)

@@ -19,10 +19,10 @@ func TestPinning(t *testing.T) {
 		},
 		Steps: map[StepName]StepUnion{
 			"stepA": Operation{
-				Inputs: map[SlotRef]AbsPath{
-					{"", "base"}: "/",
-					{"", "foo"}:  "/foo",
-					{"", "bar"}:  "/bar",
+				Inputs: map[AbsPath]SlotRef{
+					"/":    {"", "base"},
+					"/foo": {"", "foo"},
+					"/bar": {"", "bar"},
 				},
 				Action: FormulaAction{Exec: []string{"mv", "/foo/thinger", "/out/thinger"}},
 				Outputs: map[SlotName]AbsPath{
@@ -37,10 +37,10 @@ func TestPinning(t *testing.T) {
 				},
 				Steps: map[StepName]StepUnion{
 					"op": Operation{
-						Inputs: map[SlotRef]AbsPath{
-							{"", "base"}:   "/",
-							{"", "bar"}:    "/bar",
-							{"", "wodget"}: "/src",
+						Inputs: map[AbsPath]SlotRef{
+							"/":    {"", "base"},
+							"/bar": {"", "bar"},
+							"/src": {"", "wodget"},
 						},
 						Action: FormulaAction{Exec: []string{"/bar/tool", "/src", "/out/thinger"}},
 						Outputs: map[SlotName]AbsPath{
@@ -51,9 +51,9 @@ func TestPinning(t *testing.T) {
 				Exports: map[ItemName]SlotRef{"barred": {"op", "intermediate"}},
 			},
 			"stepC": Operation{
-				Inputs: map[SlotRef]AbsPath{
-					{"", "base"}:        "/",
-					{"stepB", "barred"}: "/bar",
+				Inputs: map[AbsPath]SlotRef{
+					"/":    {"", "base"},
+					"/bar": {"stepB", "barred"},
 				},
 				Action: FormulaAction{Exec: []string{"/bar/thinger"}},
 				Outputs: map[SlotName]AbsPath{

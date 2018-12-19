@@ -27,17 +27,17 @@ func TestNilRelationLexicalOrdering(t *testing.T) {
 
 func TestFanoutLexicalOrdering(t *testing.T) {
 	basting := api.Module{Steps: map[api.StepName]api.StepUnion{
-		"stepD": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
-			{"step0", "theslot"}: "/",
+		"stepD": api.Operation{Inputs: map[api.AbsPath]api.SlotRef{
+			"/": {"step0", "theslot"},
 		}},
-		"stepB": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
-			{"step0", "theslot"}: "/",
+		"stepB": api.Operation{Inputs: map[api.AbsPath]api.SlotRef{
+			"/": {"step0", "theslot"},
 		}},
-		"stepA": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
-			{"step0", "theslot"}: "/",
+		"stepA": api.Operation{Inputs: map[api.AbsPath]api.SlotRef{
+			"/": {"step0", "theslot"},
 		}},
-		"stepC": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
-			{"step0", "theslot"}: "/",
+		"stepC": api.Operation{Inputs: map[api.AbsPath]api.SlotRef{
+			"/": {"step0", "theslot"},
 		}},
 		"step0": api.Operation{Outputs: map[api.SlotName]api.AbsPath{
 			"theslot": "/",
@@ -60,11 +60,11 @@ func TestFanInLexicalOrdering(t *testing.T) {
 		"stepB": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
 		"stepA": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
 		"stepC": api.Operation{Outputs: map[api.SlotName]api.AbsPath{"theslot": "/"}},
-		"step9": api.Operation{Inputs: map[api.SlotRef]api.AbsPath{
-			{"stepA", "theslot"}: "/a",
-			{"stepB", "theslot"}: "/b",
-			{"stepC", "theslot"}: "/c",
-			{"stepD", "theslot"}: "/d",
+		"step9": api.Operation{Inputs: map[api.AbsPath]api.SlotRef{
+			"/a": {"stepA", "theslot"},
+			"/b": {"stepB", "theslot"},
+			"/c": {"stepC", "theslot"},
+			"/d": {"stepD", "theslot"},
 		}},
 	}}
 	order, err := ModuleOrderSteps(basting)
@@ -84,15 +84,15 @@ func TestSimpleLinearOrdering(t *testing.T) {
 			Outputs: map[api.SlotName]api.AbsPath{"aslot": "/"},
 		},
 		"stepB": api.Operation{
-			Inputs:  map[api.SlotRef]api.AbsPath{{"stepA", "aslot"}: "/"},
+			Inputs:  map[api.AbsPath]api.SlotRef{"/": {"stepA", "aslot"}},
 			Outputs: map[api.SlotName]api.AbsPath{"xslot": "/"},
 		},
 		"stepD": api.Operation{
-			Inputs:  map[api.SlotRef]api.AbsPath{{"stepB", "xslot"}: "/"},
+			Inputs:  map[api.AbsPath]api.SlotRef{"/": {"stepB", "xslot"}},
 			Outputs: map[api.SlotName]api.AbsPath{"xslot": "/"},
 		},
 		"stepC": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{{"stepD", "xslot"}: "/"},
+			Inputs: map[api.AbsPath]api.SlotRef{"/": {"stepD", "xslot"}},
 		},
 	}}
 	order, err := ModuleOrderSteps(basting)
@@ -122,8 +122,8 @@ func TestComplexOrdering(t *testing.T) {
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepB": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepA", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepA", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
@@ -131,66 +131,66 @@ func TestComplexOrdering(t *testing.T) {
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepD": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepC", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepC", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepE": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepB", "slot"}: "/",
-				{"stepD", "slot"}: "/1",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/":  {"stepB", "slot"},
+				"/1": {"stepD", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepF": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepD", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepD", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepG": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepF", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepF", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepH": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepE", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepE", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepI": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepF", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepF", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepJ": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepF", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepF", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepK": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepE", "slot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepE", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepL": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepG", "slot"}: "/",
-				{"stepK", "slot"}: "/1",
-				{"stepH", "slot"}: "/2",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/":  {"stepG", "slot"},
+				"/1": {"stepK", "slot"},
+				"/2": {"stepH", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
 		"stepM": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepI", "slot"}: "/",
-				{"stepJ", "slot"}: "/1",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/":  {"stepI", "slot"},
+				"/1": {"stepJ", "slot"},
 			},
 			Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 		},
@@ -231,7 +231,7 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 					},
 				},
 				"midstep": api.Operation{
-					Inputs:  map[api.SlotRef]api.AbsPath{{"deeper", "zowslot"}: "/"},
+					Inputs:  map[api.AbsPath]api.SlotRef{"/": {"deeper", "zowslot"}},
 					Outputs: map[api.SlotName]api.AbsPath{"slot": "/"},
 				},
 			},
@@ -240,8 +240,8 @@ func TestDeepSubmoduleOrdering(t *testing.T) {
 			},
 		},
 		"stepWub": api.Operation{
-			Inputs: map[api.SlotRef]api.AbsPath{
-				{"stepSub", "wowslot"}: "/",
+			Inputs: map[api.AbsPath]api.SlotRef{
+				"/": {"stepSub", "wowslot"},
 			},
 		},
 	}}
