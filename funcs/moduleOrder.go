@@ -180,8 +180,8 @@ func (s slotRefs) Less(i, j int) bool {
 func inputSlotRefs(s api.StepUnion) (r []api.SlotRef) {
 	switch x := s.(type) {
 	case api.Operation:
-		for k := range x.Inputs {
-			r = append(r, k)
+		for _, ref := range x.Inputs {
+			r = append(r, ref)
 		}
 		return r
 	case api.Module:

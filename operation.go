@@ -13,7 +13,7 @@ type AbsPath string
 	all specific, concrete WareID hashes instead of SlotRef.
 */
 type Operation struct {
-	Inputs  map[SlotRef]AbsPath
+	Inputs  map[AbsPath]SlotRef
 	Action  FormulaAction
 	Outputs map[SlotName]AbsPath `refmt:",omitempty"`
 }

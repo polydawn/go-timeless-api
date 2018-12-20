@@ -60,7 +60,7 @@ func TestModuleSerialization(t *testing.T) {
 						},
 					},
 					"midstep": Operation{
-						Inputs:  map[SlotRef]AbsPath{{"deeper", "zowslot"}: "/"},
+						Inputs:  map[AbsPath]SlotRef{"/": {"deeper", "zowslot"}},
 						Outputs: map[SlotName]AbsPath{"slot": "/"},
 					},
 				},
@@ -69,8 +69,8 @@ func TestModuleSerialization(t *testing.T) {
 				},
 			},
 			"stepWub": Operation{
-				Inputs: map[SlotRef]AbsPath{
-					{"stepSub", "wowslot"}: "/",
+				Inputs: map[AbsPath]SlotRef{
+					"/": {"stepSub", "wowslot"},
 				},
 			},
 		}}
@@ -126,7 +126,7 @@ func TestModuleSerialization(t *testing.T) {
 								"midstep": {
 									"operation": {
 										"inputs": {
-											"deeper.zowslot": "/"
+											"/": "deeper.zowslot"
 										},
 										"action": {},
 										"outputs": {
@@ -143,7 +143,7 @@ func TestModuleSerialization(t *testing.T) {
 					"stepWub": {
 						"operation": {
 							"inputs": {
-								"stepSub.wowslot": "/"
+								"/": "stepSub.wowslot"
 							},
 							"action": {}
 						}

@@ -42,8 +42,8 @@ func TestOperationSerialization(t *testing.T) {
 	})
 	t.Run("examplary operation should roundtrip", func(t *testing.T) {
 		obj := Operation{
-			Inputs: map[SlotRef]AbsPath{
-				SlotRef{"", "foo"}: "/",
+			Inputs: map[AbsPath]SlotRef{
+				"/": SlotRef{"", "foo"},
 			},
 			Action: FormulaAction{
 				Exec: []string{"/script"},
@@ -55,7 +55,7 @@ func TestOperationSerialization(t *testing.T) {
 		canon := Dedent(`
 			{
 				"inputs": {
-					"foo": "/"
+					"/": "foo"
 				},
 				"action": {
 					"exec": [
