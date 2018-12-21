@@ -159,7 +159,7 @@ func orderSteps_visit(
 			// pass!  it's a reference a module import; no recursion to do.
 		case false:
 			if err := orderSteps_visit(wire.StepName, todo, loopDetector, result, m); err != nil {
-				return nil
+				return err
 			}
 		}
 	}
