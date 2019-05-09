@@ -38,11 +38,11 @@ func (x ItemRef) String() string {
 }
 
 var Atlas_Catalog = atlas.MustBuild(
-	ModuleCatalog_AtlasEntry,
+	Lineage_AtlasEntry,
 	Release_AtlasEntry,
 	WareID_AtlasEntry,
 )
 
 var ItemRef_AtlasEntry = atlas.BuildEntry(ItemRef{}).StructMap().Autogenerate().Complete()
-var ModuleCatalog_AtlasEntry = atlas.BuildEntry(ModuleCatalog{}).StructMap().Autogenerate().Complete()
+var Lineage_AtlasEntry = atlas.BuildEntry(Lineage{}).StructMap().Autogenerate().Complete()
 var Release_AtlasEntry = atlas.BuildEntry(Release{}).StructMap().Autogenerate().Complete()

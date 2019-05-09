@@ -9,10 +9,10 @@ import (
 	. "github.com/warpfork/go-wish"
 )
 
-func TestCatalogSerialization(t *testing.T) {
+func TestLineageSerialization(t *testing.T) {
 	atl := Atlas_Catalog
-	t.Run("examplary catalog should roundtrip", func(t *testing.T) {
-		obj := ModuleCatalog{
+	t.Run("examplary lineage should roundtrip", func(t *testing.T) {
+		obj := Lineage{
 			Name: "froob.org/base",
 			Releases: []Release{
 				{
@@ -49,7 +49,7 @@ func TestCatalogSerialization(t *testing.T) {
 			Wish(t, string(bs), ShouldEqual, canon)
 		})
 		t.Run("unmarshal", func(t *testing.T) {
-			targ := ModuleCatalog{}
+			targ := Lineage{}
 			err := refmt.UnmarshalAtlased(json.DecodeOptions{}, bytes.NewBufferString(canon).Bytes(), &targ, atl)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, targ, ShouldEqual, obj)
