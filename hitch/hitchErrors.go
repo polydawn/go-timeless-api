@@ -11,7 +11,7 @@ const (
 type LookupError string
 
 const (
-	ErrNoSuchCatalog LookupError = ("no-such-catalog")
+	ErrNoSuchLineage LookupError = ("no-such-lineage")
 	ErrNoSuchRelease LookupError = ("no-such-release")
 	ErrNoSuchItem    LookupError = ("no-such-item")
 )

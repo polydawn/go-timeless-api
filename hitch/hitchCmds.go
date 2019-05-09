@@ -13,10 +13,10 @@ import (
 	"go.polydawn.net/go-timeless-api"
 )
 
-type ViewCatalogTool func(
+type ViewLineageTool func(
 	context.Context,
 	api.ModuleName,
-) (*api.ModuleCatalog, error)
+) (*api.Lineage, error)
 
 type ViewWarehousesTool func(
 	context.Context,

@@ -69,14 +69,14 @@ func TestPinning(t *testing.T) {
 	pins, _, err := ResolvePins(
 		module,
 		mockhitch.Fixture{
-			map[ModuleName]ModuleCatalog{
-				"publishing.group/base": ModuleCatalog{"publishing.group/base", []Release{
+			map[ModuleName]Lineage{
+				"publishing.group/base": Lineage{"publishing.group/base", []Release{
 					{Name: "v2018",
 						Items: map[ItemName]WareID{
 							"bin-linux-amd64": WareID{"tar", "asdflkjgh"},
 						}},
 				}},
-				"publishing.group/bar": ModuleCatalog{"publishing.group/bar", []Release{
+				"publishing.group/bar": Lineage{"publishing.group/bar", []Release{
 					{Name: "v2.0",
 						Items: map[ItemName]WareID{
 							"bin-linux-amd64": WareID{"tar", "qwer1"},
@@ -87,7 +87,7 @@ func TestPinning(t *testing.T) {
 						}},
 				}},
 			},
-		}.ViewCatalog,
+		}.ViewLineage,
 		func(_ context.Context, _ ModuleName) (*WareSourcing, error) {
 			return &WareSourcing{}, nil
 		},

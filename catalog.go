@@ -15,9 +15,9 @@ type ItemRef struct {
 //  so the all the releases for one project are now a "module catalog"
 //  (read as: "one module's catalog in the whole catalog").
 
-// ModuleCatalog contains the metadata for all releases for a particular module.
-// Treat it as an append-only record: new releases append to the module's catalog.
-type ModuleCatalog struct {
+// Lineage contains the metadata for all releases for a particular module.
+// Treat it as an append-only record: new releases append to the module's lineage.
+type Lineage struct {
 	// Name of self.
 	Name ModuleName
 
@@ -25,7 +25,7 @@ type ModuleCatalog struct {
 	// Order not particularly important, though UIs generally display in this order.
 	// Most recent entries are should be placed at the top (e.g. index zero).
 	//
-	// Each entry must have a unique ReleaseName in the scope of this ModuleCatalog.
+	// Each entry must have a unique ReleaseName in the scope of this Lineage.
 	Releases []Release
 }
 
@@ -44,7 +44,7 @@ type ModuleCatalog struct {
 // All of this is convention, however; releases could just as well be used
 // to track various versions of a photo album.
 //
-// It is recommended that a series of Release entries in a ModuleCatalog
+// It is recommended that a series of Release entries in a Lineage
 // should stick to the same set of ItemName over time, because consumers
 // of catalog information generally expect this, and changing Item names
 // may produce work for other people.

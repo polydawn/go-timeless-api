@@ -30,7 +30,7 @@ func (t Pins) DetachSubtree(submoduleName api.StepName) Pins {
 
 func ResolvePins(
 	m api.Module,
-	catalogTool hitch.ViewCatalogTool,
+	viewLineageTool hitch.ViewLineageTool,
 	viewWarehousesTool hitch.ViewWarehousesTool,
 	ingestTool ingest.IngestTool,
 ) (Pins, *api.WareSourcing, error) {
@@ -42,11 +42,11 @@ func ResolvePins(
 		_, _ = slotName, impRef
 		switch impRef2 := impRef.(type) {
 		case api.ImportRef_Catalog:
-			mcat, err := catalogTool(context.TODO(), impRef2.ModuleName)
+			mcat, err := viewLineageTool(context.TODO(), impRef2.ModuleName)
 			if err != nil {
 				return nil, nil, err
 			}
-			wareID, err := hitch.CatalogPluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
+			wareID, err := hitch.LineagePluckReleaseItem(*mcat, impRef2.ReleaseName, impRef2.ItemName)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -54,7 +54,7 @@ func ResolvePins(
 			modWs, err := viewWarehousesTool(context.TODO(), impRef2.ModuleName)
 			if err != nil {
 				switch errcat.Category(err) {
-				case hitch.ErrNoSuchCatalog:
+				case hitch.ErrNoSuchLineage:
 					modWs = &api.WareSourcing{}
 				default:
 					return nil, nil, err
@@ -80,7 +80,7 @@ func ResolvePins(
 			// pass.  hakuna matata; operations only have local references to their module's imports.
 		case api.Module:
 			// recurse, and contextualize all refs from the deeper module(s).
-			subPins, wareSourcing, err := ResolvePins(x, catalogTool, viewWarehousesTool, nil)
+			subPins, wareSourcing, err := ResolvePins(x, viewLineageTool, viewWarehousesTool, nil)
 			if err != nil {
 				return nil, nil, err
 			}

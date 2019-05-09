@@ -10,20 +10,20 @@ import (
 )
 
 var (
-	_ hitch.ViewCatalogTool = Fixture{}.ViewCatalog
+	_ hitch.ViewLineageTool = Fixture{}.ViewLineage
 )
 
 type Fixture struct {
-	Catalog map[api.ModuleName]api.ModuleCatalog
+	Catalog map[api.ModuleName]api.Lineage
 }
 
-func (fix Fixture) ViewCatalog(
+func (fix Fixture) ViewLineage(
 	_ context.Context,
 	modName api.ModuleName,
-) (*api.ModuleCatalog, error) {
+) (*api.Lineage, error) {
 	mcat, exists := fix.Catalog[modName]
 	if !exists {
-		return nil, errcat.Errorf(hitch.ErrNoSuchCatalog, "no catalog for module %q", modName)
+		return nil, errcat.Errorf(hitch.ErrNoSuchLineage, "no lineage for module %q", modName)
 	}
 	return &mcat, nil
 }
