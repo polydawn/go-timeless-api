@@ -144,7 +144,7 @@ func orderSteps_visit(
 			}
 		case false:
 			if op, ok := m.Steps[wire.StepName]; !ok {
-				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of a step in this module", node, wire, wire.SlotName)
+				return fmt.Errorf("step %q has an invalid reference to %q: %q is not the name of a step in this module", node, wire, wire.StepName)
 			} else if _, ok := outputSlotReferences(op)[wire.SlotName]; !ok {
 				return fmt.Errorf("step %q has an invalid reference to %q: step %q has no output named %s", node, wire, wire.StepName, wire.SlotName)
 			}
