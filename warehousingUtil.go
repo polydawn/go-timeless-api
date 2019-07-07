@@ -67,6 +67,16 @@ func (ws WareSourcing) PivotToWareIDs(wareIDs map[WareID]struct{}) WareSourcing 
 	return ws2
 }
 
+// PivotToWareID is like PivotToWareIDs but for a single WareID; and shortcuts
+// immediately to returning a flat list of WarehouseLocation.
+func (ws WareSourcing) PivotToWareID(wareID WareID) (v []WarehouseLocation) {
+	// Copy over anything already explicitly wareID-indexed.
+	v = append(v, ws.ByWare[wareID]...)
+	// Append packtype-general info.
+	v = append(v, ws.ByPackType[wareID.Type]...)
+	return
+}
+
 // PivotToInputs is a shortcut for calling PivotToWareIDs with the set of
 // inputs to a bound Op.
 func (ws WareSourcing) PivotToInputs(frm Formula) WareSourcing {
@@ -86,6 +96,8 @@ func (ws WareSourcing) PivotToModuleWare(wareID WareID, assumingModName ModuleNa
 	ws2 := WareSourcing{ByWare: make(map[WareID][]WarehouseLocation, 1)}
 	// Copy over anything already explicitly wareID-indexed.
 	ws2.ByWare[wareID] = ws.ByWare[wareID]
+	// Append packtype-general info.
+	ws2.ByWare[wareID] = append(ws2.ByWare[wareID], ws.ByPackType[wareID.Type]...)
 	// Append module info.
 	forMod := ws.ByModule[assumingModName]
 	if forMod == nil {
@@ -94,3 +106,5 @@ func (ws WareSourcing) PivotToModuleWare(wareID WareID, assumingModName ModuleNa
 	ws2.ByWare[wareID] = append(ws2.ByWare[wareID], forMod[wareID.Type]...)
 	return ws2
 }
+
+// TODO: a bunch of these methods should probably check for repeated warehouseLocation entries and drop subsequent ones?
