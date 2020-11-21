@@ -5,7 +5,7 @@ import (
 )
 
 // Note that these properties correlate closely with what you'll see in
-//  Rio's FS packages: go.polydawn.net/rio/fs.Metadata in particular
+//  Rio's FS packages: github.com/polydawn/rio/fs.Metadata in particular
 //   is a struct describing the same properties that these filters modify.
 
 type FilesetPackFilter struct {

@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	. "github.com/warpfork/go-wish"
-
-	"go.polydawn.net/go-timeless-api"
 )
 
 func TestNilRelationLexicalOrdering(t *testing.T) {

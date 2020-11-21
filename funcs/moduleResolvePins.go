@@ -5,9 +5,9 @@ import (
 
 	"github.com/warpfork/go-errcat"
 
-	"go.polydawn.net/go-timeless-api"
-	"go.polydawn.net/go-timeless-api/hitch"
-	"go.polydawn.net/go-timeless-api/ingest"
+	"github.com/polydawn/go-timeless-api"
+	"github.com/polydawn/go-timeless-api/hitch"
+	"github.com/polydawn/go-timeless-api/ingest"
 )
 
 type Pins map[api.SubmoduleSlotRef]api.WareID

@@ -6,8 +6,8 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	. "go.polydawn.net/go-timeless-api"
-	"go.polydawn.net/go-timeless-api/hitch/mock"
+	. "github.com/polydawn/go-timeless-api"
+	"github.com/polydawn/go-timeless-api/hitch/mock"
 )
 
 func TestPinning(t *testing.T) {

@@ -13,8 +13,8 @@ import (
 	"github.com/polydawn/refmt/json"
 	. "github.com/warpfork/go-errcat"
 
-	"go.polydawn.net/go-timeless-api"
-	"go.polydawn.net/go-timeless-api/rio"
+	"github.com/polydawn/go-timeless-api"
+	"github.com/polydawn/go-timeless-api/rio"
 )
 
 var (

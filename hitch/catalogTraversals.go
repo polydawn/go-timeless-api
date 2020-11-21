@@ -9,8 +9,6 @@ import (
 	"fmt"
 
 	"github.com/warpfork/go-errcat"
-
-	"go.polydawn.net/go-timeless-api"
 )
 
 // LineagePluckReleaseByName traverses a linage and returns a release by name.
