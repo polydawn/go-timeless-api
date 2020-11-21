@@ -3,7 +3,7 @@ package ingest
 import (
 	"context"
 
-	"go.polydawn.net/go-timeless-api"
+	"github.com/polydawn/go-timeless-api"
 )
 
 type IngestTool func(

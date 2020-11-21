@@ -6,8 +6,6 @@ import (
 	"fmt"
 
 	"github.com/warpfork/go-errcat"
-
-	"go.polydawn.net/go-timeless-api"
 )
 
 // LineagePrependRelease returns a new modified lineage with the release pushed onto

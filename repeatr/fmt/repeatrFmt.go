@@ -3,7 +3,7 @@
 package repeatrfmt
 
 import (
-	"go.polydawn.net/go-timeless-api/repeatr"
+	"github.com/polydawn/go-timeless-api/repeatr"
 )
 
 type Printer interface {
