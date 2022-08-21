@@ -13,8 +13,8 @@ import (
 	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/obj/atlas"
 
-	"go.polydawn.net/go-timeless-api"
-	"go.polydawn.net/go-timeless-api/repeatr"
+	api "github.com/polydawn/go-timeless-api"
+	"github.com/polydawn/go-timeless-api/repeatr"
 )
 
 var _ repeatr.RunFunc = Run

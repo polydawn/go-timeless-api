@@ -2,9 +2,9 @@ package rio
 
 import (
 	"github.com/polydawn/refmt/obj/atlas"
-	"github.com/polydawn/refmt/obj/atlas/common"
+	commonatlases "github.com/polydawn/refmt/obj/atlas/common"
 
-	"go.polydawn.net/go-timeless-api"
+	api "github.com/polydawn/go-timeless-api"
 )
 
 var Atlas = atlas.MustBuild(
