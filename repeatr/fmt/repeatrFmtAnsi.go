@@ -9,7 +9,7 @@ import (
 
 	"github.com/polydawn/refmt/json"
 
-	"go.polydawn.net/go-timeless-api/repeatr"
+	"github.com/polydawn/go-timeless-api/repeatr"
 )
 
 var _ Printer = &AnsiPrinter{}

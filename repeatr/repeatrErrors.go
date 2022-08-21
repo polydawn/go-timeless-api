@@ -3,7 +3,7 @@ package repeatr
 import (
 	"github.com/warpfork/go-errcat"
 
-	"go.polydawn.net/go-timeless-api/rio"
+	"github.com/polydawn/go-timeless-api/rio"
 )
 
 type ErrorCategory string

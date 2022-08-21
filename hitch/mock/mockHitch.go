@@ -5,8 +5,8 @@ import (
 
 	"github.com/warpfork/go-errcat"
 
-	"go.polydawn.net/go-timeless-api"
-	"go.polydawn.net/go-timeless-api/hitch"
+	api "github.com/polydawn/go-timeless-api"
+	"github.com/polydawn/go-timeless-api/hitch"
 )
 
 var (
